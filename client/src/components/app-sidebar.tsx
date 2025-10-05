@@ -30,14 +30,14 @@ const menuItems = [
     icon: Upload,
   },
   {
-    title: "Debt Analysis",
-    url: "/analysis",
-    icon: TrendingDown,
+    title: "Financial Profile",
+    url: "/profile",
+    icon: FileText,
   },
   {
-    title: "Payoff Plan",
-    url: "/plan",
-    icon: FileText,
+    title: "AI Advisor",
+    url: "/advisor",
+    icon: TrendingDown,
   },
   {
     title: "Settings",

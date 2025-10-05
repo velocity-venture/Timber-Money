@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Dashboard from "@/pages/Dashboard";
 import Upload from "@/pages/Upload";
+import FinancialProfile from "@/pages/FinancialProfile";
+import Advisor from "@/pages/Advisor";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -17,6 +19,8 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/upload" component={Upload} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/profile" component={FinancialProfile} />
+      <Route path="/advisor" component={Advisor} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,18 +1,35 @@
 import { FileUploadZone } from "@/components/FileUploadZone";
+import { DocumentTypeSelector } from "@/components/DocumentTypeSelector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Zap, Lock } from "lucide-react";
+import { useState } from "react";
 
 export default function Upload() {
+  const [selectedDocType, setSelectedDocType] = useState<string>();
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6" data-testid="page-upload">
+    <div className="max-w-5xl mx-auto space-y-6" data-testid="page-upload">
       <div>
-        <h1 className="text-3xl font-bold">Upload Documents</h1>
+        <h1 className="text-3xl font-bold">Upload Financial Documents</h1>
         <p className="text-muted-foreground mt-1">
-          Upload your bank statements, credit card bills, and loan documents for AI analysis
+          Upload statements, reports, and documents to build your complete financial profile
         </p>
       </div>
 
-      <FileUploadZone />
+      <div>
+        <h2 className="text-lg font-semibold mb-3">Select Document Type</h2>
+        <DocumentTypeSelector
+          onSelect={setSelectedDocType}
+          selectedType={selectedDocType}
+        />
+      </div>
+
+      {selectedDocType && (
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Upload Files</h2>
+          <FileUploadZone />
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
