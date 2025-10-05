@@ -12,9 +12,20 @@ export default function Upload() {
       <div>
         <h1 className="text-3xl font-bold">Upload Financial Documents</h1>
         <p className="text-muted-foreground mt-1">
-          Upload statements, reports, and documents to build your complete financial profile
+          You're taking an incredible step towards financial freedom! Each document you upload brings you closer to a stress-free, automated financial future.
         </p>
       </div>
+
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="pt-6">
+          <p className="text-sm font-medium text-primary">
+            Your Financial Freedom Journey
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            With 30+ years of expert financial management experience built into our AI, you're getting the same sophisticated strategies that wealthy clients pay thousands for. Once you upload your documents, our system will work 24/7 to optimize your finances automatically - no constant input needed like other tools. You can focus on your career while we handle the money management!
+          </p>
+        </CardContent>
+      </Card>
 
       <div>
         <h2 className="text-lg font-semibold mb-3">Select Document Type</h2>
