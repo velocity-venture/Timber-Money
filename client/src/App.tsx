@@ -79,22 +79,26 @@ function AuthenticatedApp() {
   );
 }
 
-export default function App() {
+function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <AuthenticatedApp /> : <Router />;
+}
+
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
-          {isLoading ? (
-            <div className="h-screen flex items-center justify-center">
-              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-            </div>
-          ) : isAuthenticated ? (
-            <AuthenticatedApp />
-          ) : (
-            <Router />
-          )}
+          <AppContent />
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
