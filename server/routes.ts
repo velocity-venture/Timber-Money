@@ -391,8 +391,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription routes (if Stripe is configured)
+  // Stripe payment routes (if Stripe is configured)
   if (stripe) {
+    // One-time payment intent route
+    app.post("/api/create-payment-intent", async (req, res) => {
+      try {
+        const { amount, currency = "usd" } = req.body;
+        
+        if (!amount || amount <= 0) {
+          return res.status(400).json({ message: "Invalid payment amount" });
+        }
+
+        const paymentIntent = await stripe!.paymentIntents.create({
+          amount: Math.round(amount * 100), // Convert to cents
+          currency,
+          automatic_payment_methods: {
+            enabled: true,
+          },
+        });
+
+        res.json({ clientSecret: paymentIntent.client_secret });
+      } catch (error: any) {
+        console.error("Error creating payment intent:", error);
+        res.status(500).json({ 
+          message: "Error creating payment intent: " + error.message 
+        });
+      }
+    });
+
     app.post(
       "/api/create-subscription",
       isAuthenticated,
