@@ -1,5 +1,6 @@
 import { CashflowAnalysis } from "@/components/CashflowAnalysis";
 import { AvalancheAutopilot } from "@/components/AvalancheAutopilot";
+import { SetAndForgetStatus } from "@/components/SetAndForgetStatus";
 import { DebtSummaryCard } from "@/components/DebtSummaryCard";
 import { DebtCard } from "@/components/DebtCard";
 import { PayoffTimeline } from "@/components/PayoffTimeline";
@@ -141,13 +142,18 @@ export default function Dashboard() {
       </Card>
 
       {/* Main Tabs */}
-      <Tabs defaultValue="cashflow" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="cashflow">Cashflow Foundation</TabsTrigger>
-          <TabsTrigger value="avalanche">Avalanche Plan</TabsTrigger>
-          <TabsTrigger value="debts">Debt Details</TabsTrigger>
-          <TabsTrigger value="export">Export & Setup</TabsTrigger>
+      <Tabs defaultValue="status" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="status">Autopilot</TabsTrigger>
+          <TabsTrigger value="cashflow">Cashflow</TabsTrigger>
+          <TabsTrigger value="avalanche">Avalanche</TabsTrigger>
+          <TabsTrigger value="debts">Debts</TabsTrigger>
+          <TabsTrigger value="export">Export</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="status" className="space-y-6">
+          <SetAndForgetStatus />
+        </TabsContent>
 
         <TabsContent value="cashflow" className="space-y-6">
           <CashflowAnalysis />
