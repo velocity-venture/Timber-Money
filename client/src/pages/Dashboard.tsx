@@ -1,4 +1,5 @@
 import { CashflowAnalysis } from "@/components/CashflowAnalysis";
+import { AvalancheAutopilot } from "@/components/AvalancheAutopilot";
 import { DebtSummaryCard } from "@/components/DebtSummaryCard";
 import { DebtCard } from "@/components/DebtCard";
 import { PayoffTimeline } from "@/components/PayoffTimeline";
@@ -153,40 +154,7 @@ export default function Dashboard() {
         </TabsContent>
 
         <TabsContent value="avalanche" className="space-y-6">
-          {/* Quick Summary Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <DebtSummaryCard
-              title="Total Debt"
-              value={`$${totalDebt.toLocaleString()}`}
-              subtitle={`Across ${debts?.length || 0} accounts`}
-              icon={DollarSign}
-            />
-            <DebtSummaryCard
-              title="Monthly Payment"
-              value={`$${(totalMinPayment + (cashflow?.safeMonthlyExtra || 0)).toLocaleString()}`}
-              subtitle="Including EXTRA"
-              icon={TrendingDown}
-            />
-            <DebtSummaryCard
-              title="Debt-Free Date"
-              value="Aug 2028"
-              subtitle="With Avalanche method"
-              icon={Calendar}
-              trend={{ value: "6 months faster", isPositive: true }}
-            />
-            <DebtSummaryCard
-              title="Interest Savings"
-              value={`$${Math.round(totalDebt * 0.12).toLocaleString()}`}
-              subtitle="vs minimum payments"
-              icon={PiggyBank}
-              trend={{ value: "Optimized", isPositive: true }}
-            />
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <PayoffTimeline data={timelineData} />
-            <PayoffStrategyCard strategies={strategies} />
-          </div>
+          <AvalancheAutopilot />
         </TabsContent>
 
         <TabsContent value="debts" className="space-y-6">
