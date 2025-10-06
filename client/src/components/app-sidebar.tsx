@@ -17,12 +17,15 @@ import {
   Settings,
   CreditCard,
   Crown,
+  Brain,
+  Bot,
+  Wallet,
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "AI Dashboard",
     url: "/",
     icon: LayoutDashboard,
   },
@@ -32,14 +35,14 @@ const menuItems = [
     icon: Upload,
   },
   {
-    title: "Financial Profile",
+    title: "Money Profile",
     url: "/profile",
-    icon: FileText,
+    icon: Wallet,
   },
   {
-    title: "AI Advisor",
+    title: "AI Assistant",
     url: "/advisor",
-    icon: TrendingDown,
+    icon: Bot,
   },
   {
     title: "Settings",
@@ -68,12 +71,12 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <TrendingDown className="w-5 h-5 text-primary-foreground" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+            <Brain className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="font-semibold text-base">Debt Freedom</h2>
-            <p className="text-xs text-muted-foreground">AI Financial Tool</p>
+            <h2 className="font-semibold text-base">MoneyMind AI</h2>
+            <p className="text-xs text-muted-foreground">Your AI Money Manager</p>
           </div>
         </div>
       </SidebarHeader>

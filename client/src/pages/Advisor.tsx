@@ -14,9 +14,9 @@ export default function Advisor() {
   return (
     <div className="max-w-5xl mx-auto space-y-6" data-testid="page-advisor">
       <div>
-        <h1 className="text-3xl font-bold">AI Financial Advisor</h1>
+        <h1 className="text-3xl font-bold">Your AI Money Assistant</h1>
         <p className="text-muted-foreground mt-1">
-          Ask questions about your finances and get personalized insights
+          Ask anything about your finances - I manage everything so you don't have to
         </p>
       </div>
 
@@ -53,48 +53,52 @@ export default function Advisor() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">What I Can Help With</CardTitle>
+          <CardTitle className="text-base">How I Manage Your Money 24/7</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Credit Score Expertise</h4>
+              <h4 className="font-semibold text-sm">Automated Bill Management</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Rapid credit score improvement (450→750+)</li>
-                <li>• Remove negative items & collections</li>
-                <li>• Pay-for-delete negotiation strategies</li>
-                <li>• Credit utilization optimization</li>
-                <li>• Goodwill letter templates</li>
-                <li>• Post-bankruptcy credit rebuilding</li>
-                <li>• Medical debt removal tactics</li>
-                <li>• Rapid rescoring strategies</li>
+                <li>• Monitor all bills & payment due dates</li>
+                <li>• Alert only for unusual charges</li>
+                <li>• Optimize payment timing for cash flow</li>
+                <li>• Negotiate better rates automatically</li>
+                <li>• Cancel unused subscriptions</li>
+                <li>• Track spending patterns 24/7</li>
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Budgeting & Planning</h4>
+              <h4 className="font-semibold text-sm">Wealth Building on Autopilot</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Monthly budget optimization</li>
-                <li>• Expense categorization insights</li>
-                <li>• Income analysis and forecasting</li>
-                <li>• Savings goal planning</li>
+                <li>• Find & move extra money to savings</li>
+                <li>• Optimize investment allocations</li>
+                <li>• Rebalance portfolios automatically</li>
+                <li>• Track net worth growth daily</li>
+                <li>• Maximize employer benefits</li>
+                <li>• Tax-loss harvesting alerts</li>
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Investments & Assets</h4>
+              <h4 className="font-semibold text-sm">Smart Debt Elimination</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Portfolio performance review</li>
-                <li>• Asset allocation suggestions</li>
-                <li>• Retirement planning guidance</li>
-                <li>• Net worth tracking</li>
+                <li>• Strategic payoff scheduling</li>
+                <li>• Interest rate optimization</li>
+                <li>• Balance transfer opportunities</li>
+                <li>• Credit score improvement</li>
+                <li>• Consolidation analysis</li>
+                <li>• Extra payment allocation</li>
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Financial Statements</h4>
+              <h4 className="font-semibold text-sm">Always-On Protection</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Personal balance sheet generation</li>
-                <li>• Cash flow statements</li>
-                <li>• Financial health reports</li>
-                <li>• Tax document preparation</li>
+                <li>• Fraud detection & alerts</li>
+                <li>• Insurance coverage gaps</li>
+                <li>• Emergency fund monitoring</li>
+                <li>• Budget variance tracking</li>
+                <li>• Financial goal progress</li>
+                <li>• Market opportunity alerts</li>
               </ul>
             </div>
           </div>
