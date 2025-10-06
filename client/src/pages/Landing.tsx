@@ -8,6 +8,12 @@ import {
   CreditCard,
   BarChart3,
   CheckCircle2,
+  Bot,
+  LineChart,
+  PiggyBank,
+  Receipt,
+  Target,
+  Brain,
 } from "lucide-react";
 
 export default function Landing() {
@@ -17,9 +23,9 @@ export default function Landing() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
-              <TrendingDown className="w-5 h-5 text-primary-foreground" />
+              <Brain className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">Debt Freedom</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">MoneyMind AI</span>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" asChild data-testid="button-pricing-header">
@@ -36,16 +42,16 @@ export default function Landing() {
         <section className="text-center mb-24 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-chart-2/10 blur-3xl opacity-50 -z-10"></div>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary text-sm font-medium mb-8 animate-fade-in">
-            <Sparkles className="w-4 h-4 animate-pulse" />
-            <span>AI-Powered Financial Freedom</span>
+            <Bot className="w-4 h-4 animate-pulse" />
+            <span>Your AI Financial Manager</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 max-w-4xl mx-auto bg-gradient-to-r from-foreground via-primary/90 to-foreground bg-clip-text text-transparent animate-fade-in">
-            Take Control of Your Finances with AI
+            Let AI Manage Your Money While You Live Your Life
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-delay">
-            Upload your financial documents and get a personalized debt payoff
-            plan, credit analysis, and professional financial guidance — all
-            powered by advanced AI technology.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in-delay">
+            Your personal AI financial assistant automatically manages bills, 
+            tracks spending, reduces debt, and grows wealth — all with minimal 
+            input from you. Set it once and let our expert AI handle the rest.
           </p>
           <div className="flex gap-4 justify-center animate-fade-in-delay-2">
             <Button size="lg" className="shadow-xl hover:shadow-2xl transition-shadow" asChild data-testid="button-get-started">
@@ -71,13 +77,13 @@ export default function Landing() {
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-4 shadow-md">
                 <FileText className="w-6 h-6 text-primary-foreground" />
               </div>
-              <CardTitle className="text-xl">Upload Documents</CardTitle>
+              <CardTitle className="text-xl">Simple Setup</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Simply upload your bank statements, credit reports, loan
-                documents, and pay stubs. Our AI analyzes everything
-                automatically with bank-level security.
+                Upload or snap photos of your financial documents. 
+                Our AI instantly builds your complete financial profile — 
+                bank accounts, debts, investments, everything.
               </p>
             </CardContent>
           </Card>
@@ -85,18 +91,19 @@ export default function Landing() {
           <Card className="relative overflow-hidden border-chart-2/20 shadow-lg hover:shadow-xl transition-shadow duration-300 hover-elevate md:scale-105">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-chart-2/10 to-transparent rounded-bl-full"></div>
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-primary to-chart-2 text-primary-foreground text-xs font-medium rounded-full">
-              Most Popular
+              Set & Forget
             </div>
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-chart-2 to-chart-2/80 flex items-center justify-center mb-4 shadow-md">
-                <Sparkles className="w-6 h-6 text-white" />
+                <Bot className="w-6 h-6 text-white" />
               </div>
-              <CardTitle className="text-xl">AI Analysis</CardTitle>
+              <CardTitle className="text-xl">AI Autopilot</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Advanced AI extracts your debts, assets, income, and credit
-                data to build a complete financial profile in seconds.
+                Your AI manager monitors bills, optimizes payments, 
+                tracks spending, and works 24/7 to improve your 
+                financial health — no daily input needed.
               </p>
             </CardContent>
           </Card>
@@ -105,14 +112,15 @@ export default function Landing() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-chart-3/10 to-transparent rounded-bl-full"></div>
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-chart-3 to-chart-3/80 flex items-center justify-center mb-4 shadow-md">
-                <TrendingDown className="w-6 h-6 text-white" />
+                <Target className="w-6 h-6 text-white" />
               </div>
-              <CardTitle className="text-xl">Get Your Plan</CardTitle>
+              <CardTitle className="text-xl">Reach Your Goals</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                Receive a personalized debt payoff strategy that saves you
-                money and gets you debt-free faster than ever.
+                Whether it's eliminating debt, building savings, or 
+                growing wealth, your AI works relentlessly toward 
+                your financial freedom.
               </p>
             </CardContent>
           </Card>
@@ -120,45 +128,45 @@ export default function Landing() {
 
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Everything You Need
+            Your Complete AI Money Management Suite
           </h2>
           <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
             {[
               {
-                icon: CreditCard,
-                title: "Credit Report Analysis",
+                icon: Receipt,
+                title: "Automatic Bill Monitoring",
                 description:
-                  "Upload your credit report and get insights on improving your score",
+                  "AI tracks and ensures all bills are paid on time, alerting you only when needed",
               },
               {
-                icon: BarChart3,
-                title: "Asset & Liability Tracking",
+                icon: PiggyBank,
+                title: "Smart Savings Optimization",
                 description:
-                  "Complete financial profile with all your assets and debts",
+                  "Automatically finds and moves extra money into savings and investments",
               },
               {
                 icon: TrendingDown,
-                title: "Debt Payoff Strategies",
+                title: "Debt Elimination Planning",
                 description:
-                  "Compare avalanche, snowball, and hybrid payoff methods",
+                  "Strategic debt payoff using avalanche, snowball, or custom methods",
               },
               {
-                icon: Sparkles,
-                title: "AI Financial Advisor",
+                icon: LineChart,
+                title: "Wealth Growth Tracking",
                 description:
-                  "Ask questions and get personalized advice based on your finances",
+                  "Monitor net worth, investment performance, and progress to financial goals",
+              },
+              {
+                icon: Brain,
+                title: "24/7 AI Financial Expert",
+                description:
+                  "Ask questions anytime and get personalized advice based on your complete profile",
               },
               {
                 icon: Shield,
                 title: "Bank-Level Security",
                 description:
-                  "Your data is encrypted and never permanently stored",
-              },
-              {
-                icon: FileText,
-                title: "Financial Statements",
-                description:
-                  "Generate professional financial reports for loans or planning",
+                  "Your data is encrypted and protected with enterprise-grade security",
               },
             ].map((feature, i) => {
               const Icon = feature.icon;
@@ -185,22 +193,23 @@ export default function Landing() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-chart-2/5 animate-pulse"></div>
           <div className="relative z-10">
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">
-              Ready to Achieve Financial Freedom?
+              Stop Managing Money. Start Living Life.
             </h2>
             <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Join thousands of users who are taking control of their finances
-              with AI-powered insights and personalized guidance. Start your journey today.
+              Join thousands who've automated their finances with AI. 
+              Your personal money manager works 24/7, handling everything 
+              while you focus on what matters most.
             </p>
             <div className="flex gap-4 justify-center items-center">
               <Button size="lg" className="shadow-xl hover:shadow-2xl transition-all" asChild data-testid="button-cta">
                 <a href="/api/login">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Start Your Journey Free
+                  <Bot className="w-4 h-4 mr-2" />
+                  Activate Your AI Manager
                 </a>
               </Button>
               <div className="text-sm text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4 inline mr-1 text-primary" />
-                Free forever • No credit card
+                Free trial • No credit card
               </div>
             </div>
           </div>
@@ -220,7 +229,7 @@ export default function Landing() {
               Pricing
             </a>
           </div>
-          <p>&copy; 2025 Debt Freedom. All rights reserved.</p>
+          <p>&copy; 2025 MoneyMind AI. All rights reserved.</p>
         </div>
       </footer>
     </div>
