@@ -1,0 +1,222 @@
+Awesome. Congrats on locking **ShoeboxToAutopilot.com** and **ShoeboxToAutopilot.ai**. Here’s a crisp, go-to-market package you can use immediately. I’ll expand abbreviations on first use (then use abbreviations thereafter) and give you one clear “best path” with minimal extras.
+
+# 1) Positioning & ICP (Ideal Customer Profile)
+
+**Positioning (one line):**
+*Turn a bag of bills into a set-and-forget money system—fast.*
+
+**Category:** Personal Finance Operations (PFO) — not investment management.
+
+**Unique mechanism:**
+
+* **Cashflow Foundation Workbook (CFW)** calculates a safe monthly **EXTRA**.
+* **Avalanche Autopilot (AA)** allocates that EXTRA to kill debt fastest.
+* **Biller-level autopay** hardens the system so it runs with minimal effort.
+* Optional **Local Model (LM) Studio** creates a private monthly “Judge’s Financial Brief” (offline).
+
+**Primary ICP:**
+
+* Busy earners (30–65), solo or couples, steady income ($70k–$250k household), juggling 3–10 debts (cards/auto/personal). Overwhelmed by paper, want **hands-off** help, privacy-aware.
+
+**Secondary ICP:**
+
+* Small business owners/1099 pros with mixed personal/business bills who need a reliable system.
+
+**Anti-ICP:**
+
+* Day-traders/HNW seeking investing advice, anyone unwilling to use autopay, people expecting credit-repair/legal services.
+
+**Top pains → promises:**
+
+* *“It’s a mess.”* → **Shoebox-to-Dashboard in 10 days** (operational, not financial, promise).
+* *“What’s safe to pay extra?”* → **CFW computes a Safe Monthly EXTRA.**
+* *“I can’t keep up.”* → **Autopay-first** + AA monthly rhythm.
+
+---
+
+# 2) Offer Ladder (DIY / Guided / Done-For-You)
+
+**Tier 1 — DIY Kit: “Shoebox Starter”**
+
+* CFW + AA spreadsheets
+* Video mini-course: **Dump → Digitize → Deploy**
+* Templates: autopay script, intake checklist, debt snapshot
+* 30-day email walkthrough + weekly group Q&A
+* *Outcome:* You self-implement in 1–2 evenings.
+
+**Tier 2 — Guided: “Co-Pilot Setup”**
+
+* Everything in DIY **plus**
+* 90-minute 1:1 onboarding
+* We tune CFW, configure AA, set biller autopays (screen-share)
+* 30-day check-in + Month-1 “Judge’s Financial Brief”
+* *Outcome:* Done-with-you; live inside ~7–10 days.
+
+**Tier 3 — Done-For-You (DFY): “Shoebox to Autopilot”**
+
+* Everything in Guided **plus**
+* We handle intake scanning/secure upload, build the vault, map all billers
+* End-to-end autopay setup (you approve)
+* AA plan + written runbook
+* LM Studio install + 3 months of monthly briefs
+* *Outcome:* White-glove; you approve and it runs.
+
+**Add-ons:**
+
+* **Accountability+** (20-min monthly review)
+* **Brief Subscription** (ongoing monthly brief, LM Studio or cloud)
+* **Annual Tune-Up** (recalibrate plan)
+
+---
+
+# 3) Pricing & Margins (targets)
+
+* **DIY** — **$197** launch price
+
+  * Est. COGS (Cost of Goods Sold) ≈ $25 → **~87% margin**
+* **Guided** — **$997**
+
+  * Est. COGS ≈ $285 (coaching + tools) → **~71% margin**
+* **DFY** — **$2,997**
+
+  * Est. COGS ≈ $1,100 (analyst time + admin) → **~63% margin**
+* **Add-ons:** Accountability+ **$39/mo**; Brief **$29/mo**; Tune-Up **$149**
+* **Pricing rule:** If capacity tightens, move to **$1,297** (Guided) / **$3,497** (DFY).
+
+---
+
+# 4) 30-Day GTM (Go-To-Market) Plan
+
+**Core channels:** Email list, YouTube Shorts + one 8–10 min weekly video, Instagram Reels, one live webinar, local partners (credit unions/church groups/adult-ed), 2 podcast guest spots.
+
+**Week 1 — Build & Prep**
+
+* Finalize messaging, disclaimers, refund policy.
+* Create **Lead Magnet:** *“Shoebox to Autopilot: 7-Step Intake & First EXTRA”* (PDF + checklist).
+* Record **Mini-Course (free):** 3 videos (Dump/Digitize/Deploy).
+* Draft **V1 Sales Page** (outline below).
+* Produce 9 Shorts/Reels (3 per pillar).
+* Set domains: .ai → **301** to .com; email authentication (SPF/DKIM/DMARC).
+
+**Week 2 — Seed & Beta**
+
+* Launch lead magnet + mini-course to warm audience.
+* Offer **10 beta seats** (Guided/DFY) at founding price for testimonials.
+* Run a 45-min **live webinar** with Q&A; pitch at end.
+* KPI: 200 leads (Cost per Lead ≤ $3), 5–10 paid.
+
+**Week 3 — Social Proof & Partnerships**
+
+* Publish 2 beta case snapshots: “First 30-Day Wins” (operational metrics only).
+* Outreach to 3 local partners for a **workshop night** (“Bring Your Bag of Bills”).
+* Book 2 podcast interviews; push the lead magnet.
+
+**Week 4 — Launch & Optimize**
+
+* Open **public cart** for DIY/Guided/DFY.
+* Retargeting ads to site visitors and video viewers.
+* Add **Accountability+** and **Brief Subscription** to the checkout.
+* KPI: 20–30 sales across tiers, refund rate < 5%, CAC (Customer Acquisition Cost) within target.
+
+---
+
+# 5) Compliance Notes & Disclaimers (starter)
+
+* **Educational & operational only** — not investment, tax, legal, or credit-repair advice.
+* **No earnings/debt-elimination guarantees.** Outcomes depend on income/spend and user actions.
+* **Privacy/Security:** Clear consent, secure upload, optional **offline** LM Studio, **30-day data deletion** unless client opts-in to retain.
+* **Access:** Client-owned credentials; prefer read-only aggregators; no custody of funds.
+* **Marketing claims:** Use documented operational wins; avoid absolute promises.
+* **Judicial ethics:** Do **not** use your judicial title/office for marketing or endorsements.
+* **Refund policy:** “Operational guarantee” (e.g., working autopay + AA plan within 30 days after required steps, or refund).
+
+---
+
+# 6) Name/Tagline Options
+
+**Primary brand:** **Shoebox to Autopilot**
+**Utility alias/handles:** **Shoebox2Autopilot** (redirect .ai → .com)
+
+**Taglines (polished & persuasive):**
+
+1. *Turn your shoebox into a dashboard.*
+2. *Set it once. Let it work for you.*
+3. *From paper chaos to payment power.*
+4. *Find your EXTRA. Kill your debt.*
+5. *Automation first. Relief fast.*
+6. *Your bills, your plan—on autopilot.*
+7. *Less juggling. More progress.*
+8. *Make your money move itself.*
+9. *Bag of bills in. Calm out.*
+10. *From overwhelm to on-time—automatically.*
+11. *Clarity today. Momentum tomorrow.*
+12. *The fastest way from messy to managed.*
+13. *One setup. Every month gets easier.*
+14. *Shoebox to Autopilot—so you can breathe.*
+
+(**Choose 2–3 and A/B test in ads/hero headers.**)
+
+---
+
+# 7) First Sales Page Outline (ready to draft)
+
+**Hero**
+
+* **H1:** *From Shoebox to Autopilot in 10 Days*
+* **Subhead:** Turn a bag of bills into a set-and-forget system—Cashflow Foundation Workbook + Avalanche Autopilot, with an offline monthly brief option for privacy.
+* **CTA (primary):** *Start Free: 7-Step Intake & First EXTRA*
+* **CTA (secondary):** *See Plans & Pricing*
+
+**Problem → Agitation**
+
+* Late fees, minimum-payment trap, no clear “extra,” paperwork chaos.
+
+**Introduce the System**
+
+* What CFW, AA, and biller-level autopay do.
+* 3-step visual: **Dump → Digitize → Deploy** (+ optional LM Studio briefs).
+
+**How It Works**
+
+1. **Dump:** Upload or we scan your pile.
+2. **Digitize:** We map bills, balances, and dates.
+3. **Deploy:** Autopay on; AA schedule set; you approve once.
+4. **Optional:** Private monthly “Judge’s Financial Brief.”
+
+**What You Get (by tier)**
+
+* Checklists, templates, spreadsheets, calls, support, first 30-day wins.
+
+**Social Proof / Case Snapshots**
+
+* Real outcomes (operational metrics, e.g., autopay live at 8 billers; $450/month EXTRA identified; first debt targeted).
+
+**Plans & Pricing**
+
+* DIY $197 | Guided $997 | DFY $2,997
+* Add-ons: Accountability+ $39/mo; Brief $29/mo; Annual Tune-Up $149.
+
+**Guarantee (operational)**
+
+* Working autopay + AA plan delivered within 30 days after required steps—or refund.
+
+**FAQ**
+
+* Privacy, offline option, credit score effects, what if income changes, cancellation, refunds.
+
+**Final CTA**
+
+* **Primary:** *Start Free — 7-Step Intake & First EXTRA*
+* **Secondary:** *Talk to a Co-Pilot (15-min)*
+
+---
+
+## Quick next steps (do these now)
+
+1. Put **.ai → .com** redirect live; set email auth (SPF/DKIM/DMARC).
+2. Publish the **lead magnet** and **mini-course landing**.
+3. Record 9 short videos (3 each: Dump/Digitize/Deploy) and schedule daily posts.
+4. Book the **Week-2 webinar**; invite list + partners.
+5. Recruit **10 beta** clients for stories and proof.
+
+If you want, I’ll turn this into a one-page printable **offer sheet** and a full **sales page draft** you can paste straight into your site.
