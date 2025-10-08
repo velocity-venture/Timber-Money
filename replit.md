@@ -236,3 +236,76 @@ npm run check  # Run TypeScript compiler
 - **AI Costs**: OpenAI API usage can be expensive at scale. Monitor costs and implement usage limits.
 - **Legal Compliance**: Review privacy policy and terms with legal counsel before launch.
 - **Data Protection**: Ensure GDPR/CCPA compliance if serving EU/California users.
+
+## Privacy Mode Research (Future Feature)
+
+### Local AI Processing Alternatives
+
+For users who want maximum privacy, we could implement an optional "Privacy Mode" that processes documents locally without sending data to OpenAI. Here are the researched alternatives:
+
+#### 1. **Ollama** (Recommended for simplicity)
+- **Pros**: Easy setup, OpenAI-compatible API, drag-and-drop document support
+- **Models**: Llama 3.3, Mistral, Phi, Qwen (0.5B-70B parameters)
+- **Requirements**: 8-16GB RAM minimum
+- **Implementation**: Could offer as downloadable companion app
+```javascript
+// Example integration
+const localAPI = process.env.USE_LOCAL_AI 
+  ? 'http://localhost:11434/api' 
+  : 'https://api.openai.com/v1';
+```
+
+#### 2. **AnythingLLM** (Best for documents)
+- **Pros**: Built specifically for document processing, handles PDFs/Word/Excel
+- **Features**: RAG-based document chat, multi-user support
+- **Architecture**: Could integrate via Docker API
+- **Privacy**: All processing stays local, no external calls
+
+#### 3. **LocalAI** (Best for developers)
+- **Pros**: Drop-in OpenAI replacement, MIT licensed
+- **Features**: LLMs, embeddings, document search
+- **Deployment**: Docker/Kubernetes ready
+- **API**: OpenAI-compatible endpoints
+
+### Implementation Strategy
+
+**Phase 1: Research & Prototype**
+- Test Ollama with financial document extraction
+- Benchmark accuracy vs GPT-4o-mini
+- Measure hardware requirements
+
+**Phase 2: Optional Download**
+- Offer "Privacy Mode" as separate desktop app
+- User downloads Ollama + our wrapper
+- Documents never leave user's machine
+
+**Phase 3: Hybrid Approach**
+- Default: Cloud processing (current implementation)
+- Privacy Mode: Local processing (slower but private)
+- User toggles in Settings
+
+### Cost-Benefit Analysis
+
+| Feature | Cloud (Current) | Local (Privacy Mode) |
+|---------|----------------|---------------------|
+| Setup | Instant | 5-10 min download |
+| Speed | Fast (1-2s) | Slower (5-30s) |
+| Accuracy | High (GPT-4o) | Medium (Llama 3.3) |
+| Privacy | OpenAI processes | 100% local |
+| Cost | $0.02-0.30/user | Free after setup |
+| Hardware | Any device | 16GB+ RAM needed |
+
+### Privacy Mode Benefits
+1. **GDPR Compliant**: No data leaves user's device
+2. **Zero Cloud Costs**: One-time setup, no API fees
+3. **Offline Capable**: Works without internet
+4. **Data Sovereignty**: User has complete control
+
+### Challenges to Address
+1. **Accuracy**: Local models less accurate for financial data extraction
+2. **Support**: Users need technical knowledge for setup
+3. **Updates**: Model improvements require manual downloads
+4. **Hardware**: Many users lack sufficient RAM/GPU
+
+### Recommendation
+Implement Privacy Mode as an optional feature for power users who prioritize privacy over convenience. Market it as "Privacy Mode Beta" with clear tradeoffs documented. This addresses the segment of users who want zero-knowledge processing while maintaining our current cloud-based solution for mainstream users who value speed and accuracy.
