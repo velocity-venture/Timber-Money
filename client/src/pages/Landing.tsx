@@ -14,6 +14,9 @@ import {
   Receipt,
   Target,
   Brain,
+  Lock,
+  Eye,
+  UserX,
 } from "lucide-react";
 
 export default function Landing() {
@@ -78,6 +81,59 @@ export default function Landing() {
           <div className="mt-8 text-sm text-muted-foreground animate-fade-in-delay-3">
             <CheckCircle2 className="w-4 h-4 inline mr-1 text-primary" />
             No credit card required • 5 free documents • Cancel anytime
+          </div>
+        </section>
+
+        {/* Trust & Security Badges */}
+        <section className="mb-20">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex flex-wrap gap-8 justify-center items-center p-8 bg-muted/30 rounded-2xl border border-border/50 backdrop-blur-sm">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold">256-bit Encryption</p>
+                  <p className="text-xs text-muted-foreground">Bank-level security</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-10 h-10 rounded-lg bg-chart-2/10 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-chart-2" />
+                </div>
+                <div>
+                  <p className="font-semibold">OAuth 2.0 Login</p>
+                  <p className="text-xs text-muted-foreground">No passwords stored</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-10 h-10 rounded-lg bg-chart-3/10 flex items-center justify-center">
+                  <UserX className="w-5 h-5 text-chart-3" />
+                </div>
+                <div>
+                  <p className="font-semibold">Delete Anytime</p>
+                  <p className="text-xs text-muted-foreground">Your data, your control</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm">
+                <div className="w-10 h-10 rounded-lg bg-chart-4/10 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-chart-4" />
+                </div>
+                <div>
+                  <p className="font-semibold">Transparent Processing</p>
+                  <p className="text-xs text-muted-foreground">Clear data practices</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 text-center">
+              <a href="/security" className="text-sm text-primary hover:underline inline-flex items-center gap-1" data-testid="link-security-details">
+                Learn about our security practices
+                <Shield className="w-4 h-4" />
+              </a>
+            </div>
           </div>
         </section>
 
@@ -236,11 +292,14 @@ export default function Landing() {
             <a href="/terms" className="hover:text-foreground" data-testid="link-terms">
               Terms of Service
             </a>
+            <a href="/security" className="hover:text-foreground" data-testid="link-security-footer">
+              Security
+            </a>
             <a href="/pricing" className="hover:text-foreground" data-testid="link-pricing-footer">
               Pricing
             </a>
           </div>
-          <p>&copy; 2025 MoneyMind AI. All rights reserved.</p>
+          <p>&copy; 2025 Shoebox to Autopilot. All rights reserved.</p>
         </div>
       </footer>
     </div>
