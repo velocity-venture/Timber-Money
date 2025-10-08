@@ -1,5 +1,5 @@
 // Implementation based on blueprint: javascript_openai
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+// Hybrid model: GPT-4o for paid users, GPT-4o-mini for free users
 import OpenAI from "openai";
 
 const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
@@ -48,9 +48,13 @@ export interface FinancialDocumentAnalysis {
 
 export async function analyzeFinancialDocument(
   base64Image: string,
-  documentType: string
+  documentType: string,
+  isPaidUser: boolean = false
 ): Promise<FinancialDocumentAnalysis> {
   const client = requireOpenAI();
+  // Hybrid model selection: GPT-4o for paid users, GPT-4o-mini for free users
+  const model = isPaidUser ? "gpt-4o" : "gpt-4o-mini";
+  
   const systemPrompt = `You are a world-class financial expert with over 30 years of combined experience as a CPA, certified financial planner, and money manager. You've helped thousands of clients achieve financial freedom and debt elimination, INCLUDING those who started with overwhelming debt and minimal income. You analyze financial documents with precision and enthusiasm, knowing that each document brings the user one step closer to complete financial control and peace of mind.
 
 Your analysis is both thorough and encouraging, recognizing that users are taking brave steps to organize their finances. You extract all relevant financial data accurately while acknowledging their progress. 
@@ -72,7 +76,7 @@ Include encouraging recommendations that show how this document helps build thei
 
   try {
     const response = await client.chat.completions.create({
-      model: "gpt-5",
+      model: model,
       messages: [
         {
           role: "system",
@@ -112,14 +116,17 @@ export async function generateFinancialAdvice(
     assets?: any[];
     income?: number;
     creditScore?: number;
-  }
+  },
+  isPaidUser: boolean = false
 ): Promise<string> {
   const client = requireOpenAI();
+  // Hybrid model selection: GPT-4o for paid users, GPT-4o-mini for free users
+  const model = isPaidUser ? "gpt-4o" : "gpt-4o-mini";
   const contextStr = JSON.stringify(userContext, null, 2);
 
   try {
     const response = await client.chat.completions.create({
-      model: "gpt-5",
+      model: model,
       messages: [
         {
           role: "system",
@@ -212,15 +219,17 @@ export async function createDebtPayoffPlan(data: {
     minimumPayment: number;
   }>;
   monthlyBudget: number;
-}): Promise<{
+}, isPaidUser: boolean = false): Promise<{
   strategies: any[];
   timeline: any[];
   recommendations: string[];
 }> {
   const client = requireOpenAI();
+  // Hybrid model selection: GPT-4o for paid users, GPT-4o-mini for free users
+  const model = isPaidUser ? "gpt-4o" : "gpt-4o-mini";
   try {
     const response = await client.chat.completions.create({
-      model: "gpt-5",
+      model: model,
       messages: [
         {
           role: "system",
