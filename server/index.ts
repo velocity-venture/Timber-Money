@@ -5,10 +5,16 @@ import { trackRequest, checkSuspiciousPatterns } from "./security-monitor";
 
 const app = express();
 
-// Security headers - protect against common attacks (no performance impact)
+// Disable X-Powered-By immediately
+app.disable('x-powered-by');
+
+// Security headers - MUST be first middleware for proper enforcement
 app.use((req, res, next) => {
-  // Prevent clickjacking attacks
-  res.setHeader('X-Frame-Options', 'DENY');
+  // Critical: Set headers for ALL responses including errors
+  
+  // Prevent clickjacking attacks - SAMEORIGIN allows our own app to iframe itself if needed
+  // but DENY is more secure if we never need iframes
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   
   // Prevent MIME type sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -20,23 +26,28 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   
   // Permissions Policy (formerly Feature Policy)
-  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
   
-  // Content Security Policy - allows our app but blocks injections
-  if (app.get("env") === "production") {
-    res.setHeader('Content-Security-Policy', 
-      "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com; " +
-      "style-src 'self' 'unsafe-inline'; " +
-      "img-src 'self' data: https:; " +
-      "connect-src 'self' https://api.stripe.com https://api.openai.com; " +
-      "frame-src https://js.stripe.com https://hooks.stripe.com; " +
-      "font-src 'self' data:;"
-    );
+  // Content Security Policy - comprehensive protection
+  const cspDirectives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",  // unsafe-eval needed for Vite in dev
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' ws: wss: https://api.stripe.com https://api.openai.com",  // ws: for Vite HMR
+    "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+    "frame-ancestors 'none'",  // Additional clickjacking protection
+    "font-src 'self' data:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests"
+  ];
+  
+  // In development, be more permissive for Vite
+  if (app.get("env") !== "development") {
+    res.setHeader('Content-Security-Policy', cspDirectives.join("; "));
   }
-  
-  // Remove X-Powered-By header to hide technology stack
-  res.removeHeader('X-Powered-By');
   
   next();
 });
