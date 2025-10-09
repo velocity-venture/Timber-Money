@@ -149,6 +149,13 @@ export default function Pricing() {
   });
 
   const handleSelectTier = (tierId: string) => {
+    // For free tier, redirect to login
+    if (tierId === 'free') {
+      window.location.href = '/api/login';
+      return;
+    }
+    
+    // For paid tiers, initiate checkout
     setSelectedTier(tierId);
     createCheckoutSession.mutate(tierId);
   };
