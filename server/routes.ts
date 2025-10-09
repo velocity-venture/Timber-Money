@@ -455,9 +455,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     app.post(
       "/api/create-subscription",
-      isAuthenticated,
       async (req: any, res) => {
         try {
+          // Check if user is authenticated
+          if (!req.user) {
+            // Return a response indicating authentication is required
+            const returnUrl = `/pricing?plan=${req.body.plan || 'pro'}&interval=${req.body.interval || 'monthly'}`;
+            return res.status(401).json({ 
+              requiresAuth: true, 
+              loginUrl: `/api/login?returnUrl=${encodeURIComponent(returnUrl)}`,
+              message: "Please log in to continue with subscription"
+            });
+          }
+          
           const userId = req.user.claims.sub;
           const { plan, interval } = req.body; // plan: 'pro' | 'family', interval: 'monthly' | 'yearly'
           const user = await storage.getUser(userId);

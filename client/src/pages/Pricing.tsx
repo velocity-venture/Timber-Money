@@ -126,20 +126,58 @@ export default function Pricing() {
         tierName: tier.name,
       });
       
-      return response.json();
+      // Parse response body once
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (e) {
+        responseData = null;
+      }
+      
+      // Check for authentication requirement first
+      if (response.status === 401 && responseData?.requiresAuth && responseData?.loginUrl) {
+        // Show login toast and redirect
+        toast({
+          title: "Login Required",
+          description: responseData.message || "Please log in to continue with your subscription.",
+        });
+        setTimeout(() => {
+          window.location.href = responseData.loginUrl;
+        }, 1500);
+        // Return empty object to avoid error but skip onSuccess
+        return { authRedirect: true };
+      }
+      
+      // Check for other errors
+      if (!response.ok) {
+        throw new Error(responseData?.message || 'Failed to create subscription');
+      }
+      
+      return responseData;
     },
     onSuccess: (data) => {
-      // In production, redirect to Stripe checkout
-      toast({
-        title: "Redirecting to checkout...",
-        description: "You'll be redirected to secure payment in a moment.",
-      });
-      // window.location.href = data.checkoutUrl;
+      // Skip if auth redirect case
+      if (data?.authRedirect) return;
+      
+      // Handle successful subscription creation
+      if (data?.clientSecret) {
+        toast({
+          title: "Subscription Created",
+          description: "Complete payment to activate your subscription.",
+        });
+        // TODO: Initialize Stripe Elements with clientSecret
+      } else {
+        toast({
+          title: "Redirecting to checkout...",
+          description: "You'll be redirected to secure payment in a moment.",
+        });
+      }
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      // Only show error if not handled in mutationFn
       toast({
         title: "Setup Required",
-        description: "Please contact support to enable payments: support@debtfreedom.ai",
+        description: "Please contact support to enable payments: support@shoeboxtoautopilot.com",
         variant: "destructive",
       });
     },
@@ -254,14 +292,22 @@ export default function Pricing() {
               <CardTitle className="text-2xl">{tier.name}</CardTitle>
               <CardDescription className="mt-2">{tier.description}</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">
-                  {tier.price === 0 ? 'Free' : 
-                    isYearly && tier.yearlyPrice ? 
-                      `$${Math.round(tier.yearlyPrice / 12)}` : 
-                      `$${tier.price}`
-                  }
-                </span>
-                {tier.price > 0 && <span className="text-muted-foreground ml-2">/month</span>}
+                {tier.price === 0 ? (
+                  <span className="text-4xl font-bold">Free</span>
+                ) : isYearly && tier.yearlyPrice ? (
+                  <>
+                    <span className="text-4xl font-bold">${tier.yearlyPrice}</span>
+                    <span className="text-muted-foreground ml-2">/year</span>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      (${(tier.yearlyPrice / 12).toFixed(2)}/mo)
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-4xl font-bold">${tier.price}</span>
+                    <span className="text-muted-foreground ml-2">/month</span>
+                  </>
+                )}
               </div>
               {isYearly && tier.savingsText && (
                 <Badge variant="secondary" className="mt-2">
