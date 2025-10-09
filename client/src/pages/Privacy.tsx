@@ -108,8 +108,8 @@ export default function Privacy() {
           <p>
             If you have questions about this privacy policy or how we handle
             your data, please contact us at{" "}
-            <a href="mailto:privacy@debtfreedom.app">
-              privacy@debtfreedom.app
+            <a href="mailto:legal@shoeboxtoautopilot.com">
+              legal@shoeboxtoautopilot.com
             </a>
             .
           </p>
