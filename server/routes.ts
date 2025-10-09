@@ -459,6 +459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       async (req: any, res) => {
         try {
           const userId = req.user.claims.sub;
+          const { plan, interval } = req.body; // plan: 'pro' | 'family', interval: 'monthly' | 'yearly'
           const user = await storage.getUser(userId);
 
           if (!user) {
@@ -485,13 +486,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
               : undefined,
           });
 
-          // Create subscription (you'll need to set STRIPE_PRICE_ID)
-          const priceId = process.env.STRIPE_PRICE_ID || "price_placeholder";
+          // Map plan and interval to Stripe price IDs
+          // You'll need to set these environment variables with actual Stripe price IDs
+          const priceIds: Record<string, string> = {
+            'pro_monthly': process.env.STRIPE_PRICE_PRO_MONTHLY || "price_pro_monthly_placeholder",
+            'pro_yearly': process.env.STRIPE_PRICE_PRO_YEARLY || "price_pro_yearly_placeholder",
+            'family_monthly': process.env.STRIPE_PRICE_FAMILY_MONTHLY || "price_family_monthly_placeholder",
+            'family_yearly': process.env.STRIPE_PRICE_FAMILY_YEARLY || "price_family_yearly_placeholder",
+          };
+
+          const priceKey = `${plan}_${interval}`;
+          const priceId = priceIds[priceKey];
+
+          if (!priceId || priceId.includes('placeholder')) {
+            return res.status(400).json({ 
+              message: `Price not configured for ${plan} ${interval}. Please set up Stripe products first.` 
+            });
+          }
+
           const subscription = await stripe!.subscriptions.create({
             customer: customer.id,
             items: [{ price: priceId }],
             payment_behavior: "default_incomplete",
             expand: ["latest_invoice.payment_intent"],
+            metadata: {
+              plan,
+              interval
+            }
           });
 
           // Update user with Stripe info

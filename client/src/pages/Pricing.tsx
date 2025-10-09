@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { 
   Check, 
   X, 
@@ -26,6 +28,7 @@ interface PricingTier {
   id: string;
   name: string;
   price: number;
+  yearlyPrice?: number;
   description: string;
   popular?: boolean;
   features: {
@@ -35,6 +38,7 @@ interface PricingTier {
   }[];
   cta: string;
   value: string;
+  savingsText?: string;
 }
 
 const pricingTiers: PricingTier[] = [
@@ -61,8 +65,10 @@ const pricingTiers: PricingTier[] = [
     id: "pro",
     name: "Pro",
     price: 19,
+    yearlyPrice: 190,
     description: "Full automation and AI guidance at coffee-shop prices",
     popular: true,
+    savingsText: "Save $38/year",
     features: [
       { text: "Everything in Free", included: true, icon: Check },
       { text: "Unlimited Document Upload", included: true, icon: FileStack },
@@ -74,14 +80,16 @@ const pricingTiers: PricingTier[] = [
       { text: "Priority Support", included: true, icon: Shield },
       { text: "Family Accounts", included: false, icon: Users },
     ],
-    cta: "Go Pro for $19/mo",
+    cta: "Go Pro",
     value: "Less than a streaming service, changes your life",
   },
   {
     id: "family",
     name: "Family",
     price: 39,
+    yearlyPrice: 390,
     description: "Transform your entire household's financial future together",
+    savingsText: "Save $78/year",
     features: [
       { text: "Everything in Pro", included: true, icon: Check },
       { text: "5 Family Member Accounts", included: true, icon: Users },
@@ -93,7 +101,7 @@ const pricingTiers: PricingTier[] = [
       { text: "VIP Support Line", included: true, icon: HeadphonesIcon },
       { text: "Annual Strategy Sessions", included: true, icon: Calendar },
     ],
-    cta: "Protect Your Family - $39/mo",
+    cta: "Protect Your Family",
     value: "Build generational wealth, break the debt cycle",
   },
 ];
@@ -102,6 +110,7 @@ export default function Pricing() {
   const { toast } = useToast();
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
 
   const createCheckoutSession = useMutation({
     mutationFn: async (tierId: string) => {
@@ -109,10 +118,11 @@ export default function Pricing() {
       const tier = pricingTiers.find(t => t.id === tierId);
       if (!tier) throw new Error("Invalid tier");
 
-      // In production, this would create a Stripe checkout session
+      // Create a Stripe checkout session with the correct plan and interval
       const response = await apiRequest("POST", "/api/create-subscription", {
-        tierId,
-        priceAmount: tier.price,
+        plan: tierId, // 'pro' or 'family'
+        interval: isYearly ? 'yearly' : 'monthly',
+        priceAmount: isYearly && tier.yearlyPrice ? tier.yearlyPrice : tier.price,
         tierName: tier.name,
       });
       
@@ -158,6 +168,26 @@ export default function Pricing() {
           Start free. Upgrade when ready. Cancel anytime. Everyone deserves financial freedom,
           regardless of their current situation. There's always hope, always a plan.
         </p>
+      </div>
+
+      {/* Annual/Monthly Toggle */}
+      <div className="flex items-center justify-center gap-4 mb-8">
+        <Label htmlFor="yearly-toggle" className={!isYearly ? "font-semibold" : "text-muted-foreground"}>
+          Monthly
+        </Label>
+        <Switch
+          id="yearly-toggle"
+          checked={isYearly}
+          onCheckedChange={setIsYearly}
+          className="data-[state=checked]:bg-primary"
+          data-testid="toggle-yearly"
+        />
+        <Label htmlFor="yearly-toggle" className={isYearly ? "font-semibold" : "text-muted-foreground"}>
+          Yearly
+          <Badge variant="secondary" className="ml-2">
+            Save 2 Months
+          </Badge>
+        </Label>
       </div>
 
       {/* Value Props */}
@@ -217,9 +247,20 @@ export default function Pricing() {
               <CardTitle className="text-2xl">{tier.name}</CardTitle>
               <CardDescription className="mt-2">{tier.description}</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">{tier.price === 0 ? 'Free' : `$${tier.price}`}</span>
+                <span className="text-4xl font-bold">
+                  {tier.price === 0 ? 'Free' : 
+                    isYearly && tier.yearlyPrice ? 
+                      `$${Math.round(tier.yearlyPrice / 12)}` : 
+                      `$${tier.price}`
+                  }
+                </span>
                 {tier.price > 0 && <span className="text-muted-foreground ml-2">/month</span>}
               </div>
+              {isYearly && tier.savingsText && (
+                <Badge variant="secondary" className="mt-2">
+                  {tier.savingsText}
+                </Badge>
+              )}
               <p className="text-sm text-primary mt-2">{tier.value}</p>
             </CardHeader>
             
@@ -240,7 +281,7 @@ export default function Pricing() {
               </ul>
             </CardContent>
             
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-2">
               <Button 
                 className="w-full" 
                 variant={tier.popular ? "default" : "outline"}
@@ -255,9 +296,24 @@ export default function Pricing() {
                     Processing...
                   </>
                 ) : (
-                  tier.cta
+                  <>
+                    {tier.cta}
+                    {tier.price > 0 && (
+                      <span className="ml-1 text-sm opacity-90">
+                        {isYearly && tier.yearlyPrice ? 
+                          ` - $${tier.yearlyPrice}/year` : 
+                          ` - $${tier.price}/mo`
+                        }
+                      </span>
+                    )}
+                  </>
                 )}
               </Button>
+              {isYearly && tier.yearlyPrice && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Billed annually at ${tier.yearlyPrice}
+                </p>
+              )}
             </CardFooter>
           </Card>
         ))}
