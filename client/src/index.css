@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE */
+/* LIGHT MODE - Bright & Inviting Color Scheme */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -18,13 +18,13 @@
 
   --foreground: 215 25% 13%;
 
-  --border: 214 32% 91%;
+  --border: 214 32% 92%;
 
-  --card: 210 40% 99%;
+  --card: 0 0% 100%;
 
   --card-foreground: 215 25% 13%;
 
-  --card-border: 214 32% 93%;
+  --card-border: 214 32% 94%;
 
   --sidebar: 210 40% 98%;
 
@@ -32,35 +32,35 @@
 
   --sidebar-border: 214 32% 91%;
 
-  --sidebar-primary: 158 64% 42%;
+  --sidebar-primary: 145 80% 44%;
 
   --sidebar-primary-foreground: 0 0% 100%;
 
-  --sidebar-accent: 210 40% 95%;
+  --sidebar-accent: 145 60% 96%;
 
   --sidebar-accent-foreground: 215 25% 13%;
 
-  --sidebar-ring: 158 64% 42%;
+  --sidebar-ring: 145 80% 44%;
 
-  --popover: 210 40% 98%;
+  --popover: 0 0% 100%;
 
   --popover-foreground: 215 25% 13%;
 
   --popover-border: 214 32% 91%;
 
-  --primary: 158 64% 42%;
+  --primary: 145 80% 44%;
 
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 217 33% 93%;
+  --secondary: 200 90% 96%;
 
   --secondary-foreground: 215 25% 13%;
 
-  --muted: 217 33% 95%;
+  --muted: 210 40% 97%;
 
   --muted-foreground: 215 20% 45%;
 
-  --accent: 173 58% 92%;
+  --accent: 160 60% 92%;
 
   --accent-foreground: 215 25% 13%;
 
@@ -68,12 +68,12 @@
 
   --destructive-foreground: 0 0% 100%;
 
-  --input: 214 32% 88%;
-  --ring: 158 64% 42%;
-  --chart-1: 158 64% 42%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 196 64% 44%;
-  --chart-4: 43 74% 49%;
+  --input: 214 32% 90%;
+  --ring: 145 80% 44%;
+  --chart-1: 145 80% 44%;
+  --chart-2: 173 70% 45%;
+  --chart-3: 200 85% 45%;
+  --chart-4: 43 90% 50%;
   --chart-5: 0 84% 60%;
 
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -132,45 +132,45 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 222 47% 7%;
+  --background: 222 47% 11%;
 
   --foreground: 213 31% 91%;
 
-  --border: 215 27% 17%;
+  --border: 215 27% 20%;
 
-  --card: 222 47% 11%;
+  --card: 222 47% 14%;
 
   --card-foreground: 213 31% 91%;
 
-  --card-border: 215 27% 20%;
+  --card-border: 215 27% 23%;
 
-  --sidebar: 222 47% 9%;
+  --sidebar: 222 47% 12%;
 
   --sidebar-foreground: 213 31% 91%;
 
-  --sidebar-border: 215 27% 15%;
+  --sidebar-border: 215 27% 18%;
 
-  --sidebar-primary: 158 64% 52%;
+  --sidebar-primary: 145 70% 55%;
 
   --sidebar-primary-foreground: 222 47% 7%;
 
-  --sidebar-accent: 222 47% 13%;
+  --sidebar-accent: 222 47% 16%;
 
   --sidebar-accent-foreground: 213 31% 91%;
 
-  --sidebar-ring: 158 64% 52%;
+  --sidebar-ring: 145 70% 55%;
 
-  --popover: 222 47% 13%;
+  --popover: 222 47% 14%;
 
   --popover-foreground: 213 31% 91%;
 
   --popover-border: 215 27% 22%;
 
-  --primary: 158 64% 52%;
+  --primary: 145 70% 55%;
 
   --primary-foreground: 222 47% 7%;
 
-  --secondary: 217 33% 17%;
+  --secondary: 200 33% 20%;
 
   --secondary-foreground: 213 31% 91%;
 

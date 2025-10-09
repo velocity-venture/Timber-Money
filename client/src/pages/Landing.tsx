@@ -52,9 +52,9 @@ export default function Landing() {
             Turn Your Shoebox Into a Dashboard
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in-delay">
-            Transform that bag of bills into a set-and-forget money system.
-            Our AI turns your messy paperwork into automated financial management
-            — bills paid, debt reduced, wealth growing. All on autopilot.
+            Transform that bag of bills into a true set-and-forget money system.
+            Unlike apps that nag you daily, our AI manages everything silently
+            — bills paid, debt reduced, wealth growing. Zero daily check-ins required.
           </p>
           <div className="flex gap-4 justify-center animate-fade-in-delay-2">
             <Button size="lg" className="shadow-xl hover:shadow-2xl transition-shadow" asChild data-testid="button-get-started">
@@ -197,6 +197,105 @@ export default function Landing() {
           </a>
         </section>
 
+        {/* Competitive Differentiator Section */}
+        <section className="mb-20 py-16 bg-gradient-to-r from-destructive/5 via-background to-destructive/5 rounded-3xl">
+          <div className="max-w-5xl mx-auto px-8">
+            <h2 className="text-3xl font-bold text-center mb-4">
+              Why Other Apps Still Feel Like Work
+            </h2>
+            <p className="text-center text-muted-foreground mb-12 text-lg">
+              We built this because we were tired of paying premium prices for daily chores
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <h3 className="font-bold text-lg text-destructive">What Others Do 😩</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 rounded-full bg-destructive"></div>
+                    </div>
+                    <div>
+                      <p className="font-medium">Monarch Money's "Needs Review" Hell</p>
+                      <p className="text-sm text-muted-foreground">Constant notifications to review every transaction. Orange banners until you manually check each one.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 rounded-full bg-destructive"></div>
+                    </div>
+                    <div>
+                      <p className="font-medium">YNAB's Manual Labor ($109/year)</p>
+                      <p className="text-sm text-muted-foreground">Despite "auto-categorization", constantly fixing wrong categories. Steep learning curve.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 rounded-full bg-destructive"></div>
+                    </div>
+                    <div>
+                      <p className="font-medium">Disconnection Nightmares</p>
+                      <p className="text-sm text-muted-foreground">Banks disconnect weekly. Re-authenticate. Deal with duplicate transactions. Repeat.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 rounded-full bg-destructive"></div>
+                    </div>
+                    <div>
+                      <p className="font-medium">Premium Upsell Fatigue</p>
+                      <p className="text-sm text-muted-foreground">Basic features locked behind $15-20/month walls. Still requires daily management.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <h3 className="font-bold text-lg text-primary">What We Do ✨</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">True "Set & Forget" Autopilot</p>
+                      <p className="text-sm text-muted-foreground">Zero daily check-ins. AI handles categorization without asking. Only alerts for critical issues.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">AI Does the Work ($19/month)</p>
+                      <p className="text-sm text-muted-foreground">Our AI categorizes, analyzes, and manages without confirmation loops. No learning curve.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Stable Smart Sync</p>
+                      <p className="text-sm text-muted-foreground">Advanced connection handling. Automatic duplicate detection. Self-healing reconnections.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">One Fair Price, Everything Included</p>
+                      <p className="text-sm text-muted-foreground">No feature gates. No upsells. Just automated financial management that actually works.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12 p-6 bg-primary/10 rounded-2xl text-center">
+              <p className="text-lg font-medium mb-2">
+                Built by someone who was paying more than our price for constant nagging
+              </p>
+              <p className="text-muted-foreground">
+                If you're tired of your budgeting app becoming another daily chore, you're ready for true autopilot.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-center mb-12">
             Your Complete AI Money Management Suite
@@ -303,7 +402,8 @@ export default function Landing() {
               Pricing
             </a>
           </div>
-          <p className="mb-3">&copy; 2025 Shoebox to Autopilot. All rights reserved.</p>
+          <p className="mb-3">&copy; 2025 Velocity Venture Holdings, LLC. All rights reserved.</p>
+          <p className="text-xs mb-3">Shoebox to Autopilot™ is a trademark of Velocity Venture Holdings, LLC</p>
           
           {/* Legal Disclaimer - now at bottom, less conspicuous */}
           <div className="mt-6 pt-6 border-t border-border/50 max-w-3xl mx-auto">
