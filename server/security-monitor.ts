@@ -21,7 +21,7 @@ const suspiciousActivities: SuspiciousActivity[] = [];
 
 // Configuration
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 100; // Max requests per IP per minute
+const MAX_REQUESTS_PER_WINDOW = 500; // Max requests per IP per minute (increased for testing)
 const MAX_AUTH_ATTEMPTS = 5; // Max login attempts
 const SUSPICIOUS_PATTERNS = [
   /(\.\.|\/\/|\\\\)/,  // Path traversal attempts
@@ -130,6 +130,12 @@ export function trackAuthAttempt(identifier: string, success: boolean): boolean 
 // Get recent suspicious activities (for admin dashboard)
 export function getRecentSuspiciousActivities(limit: number = 100): SuspiciousActivity[] {
   return suspiciousActivities.slice(-limit).reverse();
+}
+
+// Clear rate limit for a specific IP (useful for testing)
+export function clearRateLimit(ip: string): void {
+  recentRequests.delete(ip);
+  authAttempts.delete(ip);
 }
 
 // Cleanup old data periodically (runs every 5 minutes)
