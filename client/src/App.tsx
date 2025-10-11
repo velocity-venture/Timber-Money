@@ -14,6 +14,7 @@ import Upload from "@/pages/Upload";
 import FinancialProfile from "@/pages/FinancialProfile";
 import Advisor from "@/pages/Advisor";
 import Pricing from "@/pages/Pricing";
+import Pitch from "@/pages/Pitch";
 import Privacy from "@/pages/Privacy";
 import PrivacySettings from "@/pages/PrivacySettings";
 import Terms from "@/pages/Terms";
@@ -42,6 +43,7 @@ function Router() {
         <>
           <Route path="/" component={Landing} />
           <Route path="/pricing" component={Pricing} />
+          <Route path="/pitch" component={Pitch} />
           <Route path="/privacy" component={Privacy} />
           <Route path="/security" component={Security} />
           <Route path="/terms" component={Terms} />
@@ -54,6 +56,7 @@ function Router() {
           <Route path="/profile" component={FinancialProfile} />
           <Route path="/advisor" component={Advisor} />
           <Route path="/pricing" component={Pricing} />
+          <Route path="/pitch" component={Pitch} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/subscribe" component={Subscribe} />
           <Route path="/payment-success" component={PaymentSuccess} />
