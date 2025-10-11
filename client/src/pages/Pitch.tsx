@@ -83,9 +83,10 @@ export default function Pitch() {
                   <Sparkles className="w-3 h-3 mr-1" />
                   Investor Pitch Deck
                 </Badge>
-                <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-cyan-500 bg-clip-text text-transparent">
+                <h1 className="text-6xl font-bold mb-2 bg-gradient-to-r from-primary to-cyan-500 bg-clip-text text-transparent">
                   Shoebox to Autopilot
                 </h1>
+                <p className="text-xs text-muted-foreground mb-4">[Updated: Oct 11, 2025 - v2.0]</p>
                 <p className="text-2xl text-muted-foreground mb-8">
                   Turn Your Bag of Bills Into a Dashboard
                 </p>
