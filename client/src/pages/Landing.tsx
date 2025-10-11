@@ -401,6 +401,9 @@ export default function Landing() {
             <a href="/pricing" className="hover:text-foreground" data-testid="link-pricing-footer">
               Pricing
             </a>
+            <a href="/pitch" className="hover:text-foreground" data-testid="link-pitch-footer">
+              Pitch Deck
+            </a>
           </div>
           <p className="mb-3">&copy; 2025 Velocity Venture Holdings, LLC. All rights reserved.</p>
           <p className="text-xs mb-3">Shoebox to Autopilot™ is a trademark of Velocity Venture Holdings, LLC</p>
