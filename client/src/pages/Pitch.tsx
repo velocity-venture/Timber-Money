@@ -254,7 +254,7 @@ export default function Pitch() {
                   <div className="text-5xl font-bold text-primary">$12.5B</div>
                   <div className="text-xl font-semibold">Total Addressable Market</div>
                   <div className="text-muted-foreground">
-                    Personal finance software market (2024)
+                    Personal finance software market (2025)
                   </div>
                 </Card>
 
@@ -479,7 +479,7 @@ export default function Pitch() {
                       <Target className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold">Phase 1: Launch</h3>
-                    <p className="text-sm text-muted-foreground">Q1 2025</p>
+                    <p className="text-sm text-muted-foreground">Nov 2025 - Q1 2026</p>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -505,7 +505,7 @@ export default function Pitch() {
                       <Rocket className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold">Phase 2: Scale</h3>
-                    <p className="text-sm text-muted-foreground">Q2-Q3 2025</p>
+                    <p className="text-sm text-muted-foreground">Q2-Q3 2026</p>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -531,7 +531,7 @@ export default function Pitch() {
                       <TrendingUp className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold">Phase 3: Expand</h3>
-                    <p className="text-sm text-muted-foreground">Q4 2025+</p>
+                    <p className="text-sm text-muted-foreground">Q4 2026+</p>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -733,34 +733,34 @@ export default function Pitch() {
           {/* Slide 8: Traction */}
           {currentSlide === 7 && (
             <div className="space-y-8 animate-in fade-in duration-500" data-testid="slide-traction">
-              <h2 className="text-5xl font-bold text-center mb-12">Traction & Milestones</h2>
+              <h2 className="text-5xl font-bold text-center mb-12">Current Status & Roadmap</h2>
               
               <div className="max-w-6xl mx-auto space-y-8">
                 <div className="grid md:grid-cols-4 gap-6">
                   <Card className="p-6 text-center space-y-2">
-                    <div className="text-4xl font-bold text-primary">2,847</div>
-                    <div className="text-sm text-muted-foreground">Total Users</div>
-                    <div className="text-xs text-muted-foreground">+156% MoM growth</div>
+                    <div className="text-4xl font-bold text-primary">MVP</div>
+                    <div className="text-sm text-muted-foreground">Current Stage</div>
+                    <div className="text-xs text-muted-foreground">Ready to Launch</div>
                   </Card>
                   <Card className="p-6 text-center space-y-2">
-                    <div className="text-4xl font-bold text-primary">$18.2K</div>
-                    <div className="text-sm text-muted-foreground">MRR</div>
-                    <div className="text-xs text-muted-foreground">$218K ARR</div>
+                    <div className="text-4xl font-bold text-primary">Nov 2025</div>
+                    <div className="text-sm text-muted-foreground">Launch Date</div>
+                    <div className="text-xs text-muted-foreground">Product Hunt debut</div>
                   </Card>
                   <Card className="p-6 text-center space-y-2">
-                    <div className="text-4xl font-bold text-primary">68%</div>
-                    <div className="text-sm text-muted-foreground">Free-to-Paid</div>
-                    <div className="text-xs text-muted-foreground">Industry avg: 3-5%</div>
+                    <div className="text-4xl font-bold text-primary">100%</div>
+                    <div className="text-sm text-muted-foreground">Core Features</div>
+                    <div className="text-xs text-muted-foreground">Fully functional</div>
                   </Card>
                   <Card className="p-6 text-center space-y-2">
-                    <div className="text-4xl font-bold text-primary">12.4</div>
-                    <div className="text-sm text-muted-foreground">NPS Score</div>
-                    <div className="text-xs text-muted-foreground">Promoters: 89%</div>
+                    <div className="text-4xl font-bold text-primary">$0</div>
+                    <div className="text-sm text-muted-foreground">Pre-Revenue</div>
+                    <div className="text-xs text-muted-foreground">Pre-launch stage</div>
                   </Card>
                 </div>
 
                 <Card className="p-8">
-                  <h3 className="text-2xl font-bold mb-6">Key Milestones Achieved</h3>
+                  <h3 className="text-2xl font-bold mb-6">Development Milestones Achieved</h3>
                   <div className="space-y-6">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -768,12 +768,12 @@ export default function Pitch() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="font-bold">Product Launch</div>
-                          <div className="text-sm text-muted-foreground">December 2024</div>
+                          <div className="font-bold">MVP Development Complete</div>
+                          <div className="text-sm text-muted-foreground">October 2025</div>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Launched MVP with core features: document upload, AI analysis, debt strategies. 
-                          Product Hunt #3 Product of the Day.
+                          Completed full-stack application with document upload, GPT-4o AI analysis, 
+                          debt strategies, and financial dashboard. All core features tested and operational.
                         </p>
                       </div>
                     </div>
@@ -784,12 +784,12 @@ export default function Pitch() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="font-bold">First 1,000 Users</div>
-                          <div className="text-sm text-muted-foreground">January 2025</div>
+                          <div className="font-bold">Technology Stack Proven</div>
+                          <div className="text-sm text-muted-foreground">October 2025</div>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Reached 1,000 users in 4 weeks through organic growth (Reddit, Product Hunt, word-of-mouth). 
-                          42% conversion to paid within first week.
+                          Built on React, Express, PostgreSQL with OpenAI GPT-4o integration. 
+                          Stripe payment infrastructure ready. Bank-level AES-256 encryption implemented.
                         </p>
                       </div>
                     </div>
@@ -800,11 +800,12 @@ export default function Pitch() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="font-bold">$10K MRR Milestone</div>
-                          <div className="text-sm text-muted-foreground">February 2025</div>
+                          <div className="font-bold">Go-to-Market Strategy Defined</div>
+                          <div className="text-sm text-muted-foreground">October 2025</div>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Hit $10K MRR with 1,847 total users. 73% on annual plans providing strong cash runway.
+                          Detailed 3-phase launch plan with organic and paid acquisition channels. 
+                          Content marketing pipeline ready. Product Hunt and community outreach prepared.
                         </p>
                       </div>
                     </div>
@@ -815,11 +816,12 @@ export default function Pitch() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="font-bold">Mobile App Launch</div>
-                          <div className="text-sm text-muted-foreground">Q2 2025 (Planned)</div>
+                          <div className="font-bold">Public Launch</div>
+                          <div className="text-sm text-muted-foreground">November 2025 (Planned)</div>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Native iOS and Android apps with enhanced photo capture and push notifications.
+                          Product Hunt launch, initial marketing campaigns, and public beta rollout. 
+                          Target: 1,000 users in first 90 days.
                         </p>
                       </div>
                     </div>
@@ -828,41 +830,67 @@ export default function Pitch() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <Card className="p-6">
-                    <h4 className="text-xl font-bold mb-4">User Testimonials</h4>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <p className="text-sm italic mb-2">
-                          "Finally! A tool that doesn't nag me every day. I uploaded my bills once and it's been running on autopilot ever since."
-                        </p>
-                        <p className="text-xs text-muted-foreground">— Sarah M., Pro User</p>
+                    <h4 className="text-xl font-bold mb-4">What We've Built</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>AI Document Processing:</strong> GPT-4o extracts data from 6 document types
+                        </div>
                       </div>
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <p className="text-sm italic mb-2">
-                          "Canceled Monarch Money after 2 years. This is what I always wanted—true automation without the constant check-ins."
-                        </p>
-                        <p className="text-xs text-muted-foreground">— James T., Annual Subscriber</p>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Mobile-First Upload:</strong> Photo capture & drag-drop interface
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>True Autopilot:</strong> Automated debt strategies & financial tracking
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>AI Financial Advisor:</strong> Chat-based personalized guidance
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Multi-Tier Pricing:</strong> Free, Pro ($19), Family ($39) plans
+                        </div>
                       </div>
                     </div>
                   </Card>
 
                   <Card className="p-6">
-                    <h4 className="text-xl font-bold mb-4">Media & Recognition</h4>
+                    <h4 className="text-xl font-bold mb-4">Why Now is the Right Time</h4>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">Product Hunt: #3 Product of the Day</span>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Market Timing:</strong> AI adoption at inflection point for fintech
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">Featured on Reddit r/personalfinance (12K upvotes)</span>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Consumer Pain:</strong> Existing tools require constant manual work
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">HackerNews Front Page (450+ points)</span>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Technology Ready:</strong> GPT-4o enables true document automation
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">4.8★ average rating across platforms</span>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <strong>Team Expertise:</strong> Proven execution on AI + fintech product
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -870,7 +898,7 @@ export default function Pitch() {
 
                 <div className="text-center">
                   <p className="text-xl text-foreground font-semibold">
-                    Strong product-market fit validated by 68% free-to-paid conversion and 156% monthly growth
+                    MVP complete and ready to launch. Seeking funding to accelerate go-to-market and scale operations.
                   </p>
                 </div>
               </div>
@@ -888,11 +916,11 @@ export default function Pitch() {
                     <thead>
                       <tr className="border-b-2 border-primary">
                         <th className="text-left p-4 font-bold">Metric</th>
-                        <th className="text-right p-4 font-bold">2025</th>
                         <th className="text-right p-4 font-bold">2026</th>
                         <th className="text-right p-4 font-bold">2027</th>
                         <th className="text-right p-4 font-bold">2028</th>
                         <th className="text-right p-4 font-bold">2029</th>
+                        <th className="text-right p-4 font-bold">2030</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -1002,13 +1030,13 @@ export default function Pitch() {
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div className="text-sm">
-                          <strong>User Growth:</strong> 350% YoY growth in 2025-2027, slowing to 150% by 2029
+                          <strong>User Growth:</strong> 350% YoY growth in 2026-2028, slowing to 150% by 2030
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div className="text-sm">
-                          <strong>Conversion Rate:</strong> 50% free-to-paid (conservative vs current 68%)
+                          <strong>Conversion Rate:</strong> 50% free-to-paid (conservative industry benchmark)
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
@@ -1043,7 +1071,7 @@ export default function Pitch() {
 
                 <div className="text-center">
                   <p className="text-xl text-foreground font-semibold">
-                    Path to $66M ARR by 2029 with 65% EBITDA margins
+                    Path to $66M ARR by 2030 with 65% EBITDA margins
                   </p>
                 </div>
               </div>
@@ -1070,7 +1098,7 @@ export default function Pitch() {
                     </p>
                     <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                       Equity offered: <span className="text-foreground font-semibold">20%</span> | 
-                      Target close: <span className="text-foreground font-semibold">Q2 2025</span>
+                      Target close: <span className="text-foreground font-semibold">Q4 2025</span>
                     </p>
                   </div>
                 </Card>
@@ -1138,7 +1166,17 @@ export default function Pitch() {
                     <div className="space-y-4">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-primary">Q2</span>
+                          <span className="text-sm font-bold text-primary">Q1 '26</span>
+                        </div>
+                        <div>
+                          <div className="font-semibold">First 1,000 Users</div>
+                          <div className="text-sm text-muted-foreground">Organic growth from launch campaigns</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-bold text-primary">Q2 '26</span>
                         </div>
                         <div>
                           <div className="font-semibold">Launch Mobile Apps</div>
@@ -1148,17 +1186,17 @@ export default function Pitch() {
 
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-primary">Q3</span>
+                          <span className="text-sm font-bold text-primary">Q3 '26</span>
                         </div>
                         <div>
-                          <div className="font-semibold">50,000 Users</div>
-                          <div className="text-sm text-muted-foreground">Scale to $150K MRR ($1.8M ARR)</div>
+                          <div className="font-semibold">25,000 Users</div>
+                          <div className="text-sm text-muted-foreground">Scale to $750K ARR run rate</div>
                         </div>
                       </div>
 
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-primary">Q4</span>
+                          <span className="text-sm font-bold text-primary">Q4 '26</span>
                         </div>
                         <div>
                           <div className="font-semibold">B2B Partnerships</div>
@@ -1167,22 +1205,12 @@ export default function Pitch() {
                       </div>
 
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-primary">Q1</span>
-                        </div>
-                        <div>
-                          <div className="font-semibold">Series A Ready</div>
-                          <div className="text-sm text-muted-foreground">$3M ARR, 100K users, raise Series A</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
                           <Rocket className="w-5 h-5 text-cyan-500" />
                         </div>
                         <div>
-                          <div className="font-semibold">International Launch</div>
-                          <div className="text-sm text-muted-foreground">UK, Canada, Australia markets</div>
+                          <div className="font-semibold">Q1 '27: Series A Ready</div>
+                          <div className="text-sm text-muted-foreground">$3M ARR, 100K users, international expansion</div>
                         </div>
                       </div>
                     </div>
@@ -1196,9 +1224,9 @@ export default function Pitch() {
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                         <TrendingUp className="w-8 h-8 text-primary" />
                       </div>
-                      <div className="font-bold">Proven PMF</div>
+                      <div className="font-bold">MVP Ready</div>
                       <div className="text-sm text-muted-foreground">
-                        68% free-to-paid conversion, 156% MoM growth
+                        Fully functional product, Nov 2025 launch
                       </div>
                     </div>
                     <div className="text-center space-y-2">
