@@ -7,11 +7,11 @@ const TIMBER_ADVICE_PLAYBOOK =
   "ADVICE MODE ADDENDUM — APPROACH & CREDIT SCORE PLAYBOOK\n" +
   "Your approach is:\n" +
   "1. UNWAVERINGLY ENCOURAGING: Celebrate EVERY step users take. Even uploading one document is brave! No matter how bad their situation looks, you've seen worse turn into success stories.\n" +
-  "2. ALWAYS HOPEFUL: NEVER leave someone feeling hopeless. If debt seems insurmountable, break it into micro-wins. If income is too low, suggest creative solutions. There's ALWAYS a path forward.\n" +
+  "2. ALWAYS HOPEFUL: NEVER leave someone feeling hopeless. If debt seems insurmountable, break it into micro-wins. If income is too low, suggest creative solutions. There's ALWAYS a path forward. CRITICAL: Never use words like 'hopeless', 'impossible', 'can't', or 'failure'. Instead say: 'challenging but solvable', 'tough situation with clear steps forward', 'this is temporary', 'you're facing a fork in the road'.\n" +
   "3. EXPERT-LEVEL: Provide sophisticated strategies that normally only wealthy clients receive, but explain them clearly and adapt them to ANY income level.\n" +
-  "4. AUTOMATED: Design solutions that require minimal ongoing input - set it and forget it approaches that run on autopilot.\n" +
+  "4. AUTOMATED: Design solutions that require minimal ongoing input - set it and forget it approaches that run on autopilot. CRITICAL: Always suggest automation first. Use phrases like 'set up automatic transfers', 'autopilot savings', 'recurring payments', 'automated investing'. Manual tracking is the LAST resort.\n" +
   "5. COMPREHENSIVE: Consider taxes, investments, debt, budgeting, credit scores, and estate planning holistically - but prioritize based on their current crisis level.\n" +
-  "6. REALISTIC YET OPTIMISTIC: If traditional debt payoff would take 40 years, explore debt settlement, bankruptcy as a fresh start, or income-boosting strategies. Frame these as strategic tools, not failures.\n" +
+  "6. REALISTIC YET OPTIMISTIC: If traditional debt payoff would take 40 years, explore debt settlement, bankruptcy as a fresh start, or income-boosting strategies. Frame these as strategic tools, not failures. Say 'strategic reset' instead of 'bankruptcy', 'negotiated settlement' instead of 'giving up'.\n" +
   "\nCREDIT SCORE EXPERTISE:\n" +
   "- People who went from 450 to 750+ in 18 months\n" +
   "- Bankruptcy filers who achieved 700+ scores within 2 years\n" +
@@ -115,6 +115,38 @@ export async function analyzeFinancialDocument(
   }
 }
 
+// Post-processing filter to remove negative language
+function filterNegativeLanguage(text: string): string {
+  const replacements: Record<string, string> = {
+    "hopeless": "challenging",
+    "impossible": "very difficult but solvable",
+    "can't": "may find it difficult to",
+    "failure": "setback",
+    "failed": "faced challenges with",
+    "failing": "struggling with"
+  };
+
+  let filtered = text;
+  
+  // Replace negative words (case-insensitive, preserving case in replacement)
+  for (const [negative, positive] of Object.entries(replacements)) {
+    const regex = new RegExp(`\\b${negative}\\b`, 'gi');
+    filtered = filtered.replace(regex, (match) => {
+      // Preserve capitalization
+      if (match[0] === match[0].toUpperCase()) {
+        return positive.charAt(0).toUpperCase() + positive.slice(1);
+      }
+      return positive;
+    });
+  }
+
+  // Remove phrases like "it's not hopeless" -> "there's a path forward"
+  filtered = filtered.replace(/it'?s not (hopeless|impossible)/gi, "there's a clear path forward");
+  filtered = filtered.replace(/not (hopeless|impossible)/gi, "solvable");
+  
+  return filtered;
+}
+
 export async function generateFinancialAdvice(
   question: string,
   userContext: {
@@ -142,7 +174,10 @@ export async function generateFinancialAdvice(
       max_completion_tokens: 2048
     });
 
-    return response.choices[0].message.content || "Unable to generate advice.";
+    const rawContent = response.choices[0].message.content || "Unable to generate advice.";
+    
+    // Apply negative language filter
+    return filterNegativeLanguage(rawContent);
   } catch (error: any) {
     throw new Error("Failed to generate advice: " + error.message);
   }
