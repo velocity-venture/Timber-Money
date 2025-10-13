@@ -125,7 +125,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.upsertFinancialProfile({
             userId,
             monthlyIncome: analysis.extractedData.income.monthlyAmount.toString(),
-            creditScore: analysis.extractedData.creditScore || null,
           });
         }
 
@@ -408,15 +407,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const debts = await storage.getDebtsByUser(userId);
       const { monthlyBudget } = req.body;
 
-      const plan = await createDebtPayoffPlan({
-        debts: debts.map((d) => ({
+      const plan = await createDebtPayoffPlan(
+        debts.map((d) => ({
+          id: parseInt(d.id),
           creditor: d.creditor,
-          balance: parseFloat(d.currentBalance),
-          apr: parseFloat(d.apr),
-          minimumPayment: parseFloat(d.minimumPayment),
+          currentBalance: d.currentBalance,
+          apr: d.apr,
+          minimumPayment: d.minimumPayment,
         })),
         monthlyBudget,
-      }, isPaidUser);
+        "avalanche",
+        isPaidUser
+      );
 
       res.json(plan);
     } catch (error: any) {
