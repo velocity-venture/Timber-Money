@@ -6,6 +6,7 @@ import Tesseract from "tesseract.js";
 import { db } from "./db";
 import { documents } from "../shared/schema";
 import { eq, and } from "drizzle-orm";
+import { enrich } from "./docs-parse-pass";
 
 export const docsRouter = Router();
 
@@ -111,6 +112,19 @@ docsRouter.post("/upload", upload.single("file"), async (req: any, res: Response
     }
 
     const parsed = text ? normalizeExtractedData(text, name) : null;
+    
+    // Enrichment pass: add period, transactions, validation
+    if (parsed && text) {
+      try {
+        const enriched = enrich(text, parsed as any);
+        (parsed as any).period = enriched.period;
+        (parsed as any).transactions = enriched.transactions;
+        (parsed as any).validations = enriched.validations;
+      } catch (e) {
+        console.error("[docs] enrich pass error", e);
+      }
+    }
+    
     const needsReview = extractionError || !parsed?.summary.total;
     const documentType = parsed?.type || "other";
     

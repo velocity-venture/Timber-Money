@@ -90,9 +90,14 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
      - Status flow: processing → completed/failed
      - Synchronous processing with error handling
      - Auto-creates financial entities (debts, assets, income) from AI analysis
-   - **PDF/OCR Upload** (POST /api/docs/upload): Direct text extraction with fallback OCR
+   - **PDF/OCR Upload** (POST /api/docs/upload): Direct text extraction with enrichment pass
      - PDF extraction using pdf-parse library
      - Image OCR using Tesseract.js
+     - **Enrichment Pass** (server/docs-parse-pass.ts):
+       - Period extraction: Captures statement date ranges (start/end)
+       - Transaction parsing: Extracts individual line items (up to 500 transactions)
+       - Validation: Compares transaction sum with stated total
+       - Adds period, transactions, and validations to analysisData
      - Status flow: completed/failed (synchronous, no pending state)
      - Includes needsReview flag for manual verification
 2. **Shoebox Mode** (Default): Users dump all documents at once
