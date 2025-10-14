@@ -1,0 +1,89 @@
+set -e
+
+# Desired public-facing mascot name
+MASCOT_TITLE="Timber"
+MASCOT_ALT="Timber, your money guide"
+APP_TITLE="Timber Money"
+
+echo "==> 1) Update animated SVG title/desc to remove 'Safety Beaver' and align to money theme"
+SVG_PATH="client/public/mascot/timber-animated.svg"
+if [ -f "$SVG_PATH" ]; then
+  perl -0777 -pe 's|<title>.*?</title>|<title>Timber</title>|is' -i "$SVG_PATH"
+  perl -0777 -pe 's|<desc>.*?</desc>|<desc>Animated mascot with clipboard, friendly financial guide vibes.</desc>|is' -i "$SVG_PATH"
+else
+  echo "WARN: $SVG_PATH not found; skipping SVG title/desc update."
+fi
+
+echo "==> 2) Update the injected header component alt text and visible labeling"
+JS_PATH="client/public/scripts/timber-header.js"
+if [ -f "$JS_PATH" ]; then
+  # Replace any old alt text e.g., "Timber mascot" / "Safety Beaver"
+  perl -0777 -pe 's/alt="[^"]*"/alt="Timber, your money guide"/' -i "$JS_PATH"
+else
+  echo "WARN: $JS_PATH not found; skipping header script alt text update."
+fi
+
+echo "==> 3) Remove any references to 'Safety Beaver' across the codebase (display strings only)"
+grep -RIl --exclude-dir=node_modules --exclude-dir=.git --include='*.{ts,tsx,js,jsx,html,md,json,svg}' 'Safety Beaver' . \
+  | xargs -r perl -0777 -pe 's/Safety Beaver/Timber/g' -i
+
+echo "==> 4) Normalize other common variants (Safety mascot -> mascot, etc.)"
+grep -RIl --exclude-dir=node_modules --exclude-dir=.git --include='*.{ts,tsx,js,jsx,html,md,json,svg}' 'Safety mascot' . \
+  | xargs -r perl -0777 -pe 's/Safety mascot/mascot/g' -i
+
+echo "==> 5) Ensure site/app titles emphasize money (optional but recommended)"
+# - If index.html exists, ensure page title references Timber Money
+if [ -f client/index.html ]; then
+  perl -0777 -pe 's|<title>.*?</title>|<title>Timber Money</title>|is' -i client/index.html
+fi
+# - If .replit has title/description, set to Timber Money (keeps Replit metadata on-brand)
+if [ -f .replit ]; then
+  if grep -qi '^title *= *' .replit; then
+    perl -0777 -pe 's/^title *= *.*$/title = "Timber Money"/mi' -i .replit
+  else
+    printf '\ntitle = "%s"\n' "$APP_TITLE" >> .replit
+  fi
+  if grep -qi '^description *= *' .replit; then
+    perl -0777 -pe 's/^description *= *.*$/description = "Smart money tools with Timber as your friendly guide."/mi' -i .replit
+  else
+    printf 'description = "Smart money tools with Timber as your friendly guide."\n' >> .replit
+  fi
+fi
+
+echo "==> 6) Add a small, reusable label utility (optional badge for pages)"
+mkdir -p client/public/styles
+cat > client/public/styles/timber-badge.css <<'CSS'
+.timber-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font:600 12px/1.1 system-ui, -apple-system, Segoe UI, Inter, Arial, sans-serif;
+  color:#0f172a;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;
+  padding:.35rem .6rem;
+}
+.timber-badge img{width:16px;height:16px;display:block}
+CSS
+
+# Ensure badge CSS is loaded on every page (if index.html exists)
+if [ -f client/index.html ]; then
+  if ! grep -q 'timber-badge.css' client/index.html; then
+    perl -0777 -pe 's#</head>#  <link rel="stylesheet" href="/styles/timber-badge.css" />\n</head>#i' -i client/index.html
+  fi
+fi
+
+echo "==> 7) Optional: add a badge snippet (does not auto-render; just for your reference)"
+mkdir -p client/public/snippets
+cat > client/public/snippets/timber-badge.html <<'HTML'
+<span class="timber-badge">
+  <img src="/mascot/timber-animated.svg" alt="Timber badge">
+  Timber — your money guide
+</span>
+HTML
+
+echo "==> 8) Touch to force rebuild"
+date > .rebuild_touch
+
+echo "DONE: Mascot branding updated to 'Timber' with money-focused language."
+echo "• SVG <title>/<desc> set to: 'Timber' and financial guide desc"
+echo "• Alt text set to: 'Timber, your money guide'"
+echo "• Removed 'Safety Beaver' from source"
+echo "• .replit and <title> aligned to 'Timber Money'"
+echo "Restart the app and hard refresh. If any surface still shows 'Safety Beaver', tell me where you see it (exact screen), and I’ll patch that surface next with a single script."
