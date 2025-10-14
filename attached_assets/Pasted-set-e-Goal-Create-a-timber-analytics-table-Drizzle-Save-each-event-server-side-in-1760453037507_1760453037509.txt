@@ -1,0 +1,144 @@
+set -e
+
+# Goal
+# - Create a timber_analytics table (Drizzle)
+# - Save each event server-side (in addition to console log)
+# - Add /api/timber/stats?day=YYYY-MM-DD to view daily rollups
+
+# 1) Define Drizzle schema for analytics
+SCHEMA="server/schema.ts"
+if [ -f "$SCHEMA" ]; then
+  if ! grep -q "export const timberAnalytics" "$SCHEMA"; then
+    cat >> "$SCHEMA" <<'TS'
+
+/* === Timber Analytics Schema === */
+import { pgTable, text, integer, timestamp, varchar } from "drizzle-orm/pg-core";
+
+export const timberAnalytics = pgTable("timber_analytics", {
+  id: varchar("id", { length: 36 }).primaryKey(),         // uuid
+  event: varchar("event", { length: 64 }).notNull(),       // tip_impression | tip_hover | tip_click
+  path: varchar("path", { length: 256 }),
+  tipHash: integer("tip_hash"),
+  uid: varchar("uid", { length: 128 }),
+  ip: varchar("ip", { length: 64 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+TS
+  else
+    echo "Schema already contains timberAnalytics."
+  fi
+else
+  echo "ERROR: server/schema.ts not found. Aborting."; exit 1
+fi
+
+# 2) Server insert logic: augment existing router to save events
+AN_FILE="server/timber-analytics.ts"
+if [ ! -f "$AN_FILE" ]; then
+  echo "ERROR: $AN_FILE not found. Aborting."; exit 1
+fi
+
+# Add DB imports and insert if not present
+if ! grep -q "insert into DB" "$AN_FILE"; then
+  perl -0777 -pe 's|(import { Router, Request, Response } from "express";)|\1\nimport { db } from "./db";\nimport { timberAnalytics } from "./schema";\nimport { randomUUID } from "crypto";|;' -i "$AN_FILE"
+
+  perl -0777 -pe 's|(console\.log\("\[timber-analytics\]", line\);)|\1\n    try {\n      await db.insert(timberAnalytics).values({\n        id: randomUUID(),\n        event: String(data.event||"unknown").slice(0,64),\n        path: String(data.path||"").slice(0,256),\n        tipHash: typeof data.tipHash==="number" ? data.tipHash : null,\n        uid: String(data.uid||"anon").slice(0,128),\n        ip: String(ip||"").slice(0,64),\n      });\n    } catch (e) {\n      console.error("[timber-analytics] db-insert-error", e);\n    }|' -i "$AN_FILE"
+
+  # Mark handler async
+  perl -0777 -pe 's/timberAnalyticsRouter\.post\("\/analytics", \(req: Request, res: Response\) => \{/timberAnalyticsRouter.post("\/analytics", async (req: Request, res: Response) => {/' -i "$AN_FILE"
+fi
+
+# 3) Add rollup endpoint: /api/timber/stats?day=YYYY-MM-DD
+if ! grep -q '"/stats"' "$AN_FILE"; then
+  cat >> "$AN_FILE" <<'TS'
+
+/**
+ * GET /api/timber/stats?day=YYYY-MM-DD
+ * Returns: { day, totals: { impressions, hovers, clicks }, byPath: [...], byTip: [...] }
+ */
+timberAnalyticsRouter.get("/stats", async (req: Request, res: Response) => {
+  try {
+    const day = (req.query.day as string) || new Date().toISOString().slice(0,10);
+    const start = new Date(day + "T00:00:00.000Z");
+    const end = new Date(day + "T23:59:59.999Z");
+
+    // Use SQL via db.execute if you prefer; Drizzle aggregate example below:
+    // Totals by event
+    const rows = await db.execute(
+      `select event, count(*) as c from timber_analytics
+       where created_at >= $1 and created_at <= $2
+       group by event`, [start, end]
+    );
+    const totals = { impressions: 0, hovers: 0, clicks: 0 };
+    for (const r of rows.rows || []) {
+      if (r.event === 'tip_impression') totals.impressions = Number(r.c);
+      if (r.event === 'tip_hover') totals.hovers = Number(r.c);
+      if (r.event === 'tip_click') totals.clicks = Number(r.c);
+    }
+
+    const byPath = await db.execute(
+      `select path, event, count(*) as c from timber_analytics
+       where created_at >= $1 and created_at <= $2
+       group by path, event
+       order by c desc limit 50`, [start, end]
+    );
+
+    const byTip = await db.execute(
+      `select tip_hash as "tipHash", event, count(*) as c from timber_analytics
+       where created_at >= $1 and created_at <= $2
+       group by tip_hash, event
+       order by c desc limit 50`, [start, end]
+    );
+
+    res.json({
+      day,
+      totals,
+      byPath: byPath.rows || [],
+      byTip: byTip.rows || [],
+    });
+  } catch (e) {
+    console.error("[timber-analytics] stats-error", e);
+    res.status(500).json({ error: "stats_failed" });
+  }
+});
+TS
+fi
+
+# 4) Run migrations (Drizzle) — generate table if not exists
+# We attempt a simple CREATE TABLE IF NOT EXISTS using db.execute for quick bootstrap.
+MIG_FILE="server/db-bootstrap-timber-analytics.ts"
+cat > "$MIG_FILE" <<'TS'
+import { db } from "./db";
+
+export async function ensureTimberAnalyticsTable() {
+  await db.execute(`
+    create table if not exists timber_analytics (
+      id varchar(36) primary key,
+      event varchar(64) not null,
+      path varchar(256),
+      tip_hash integer,
+      uid varchar(128),
+      ip varchar(64),
+      created_at timestamp default now() not null
+    );
+    create index if not exists idx_timber_analytics_day on timber_analytics (created_at);
+    create index if not exists idx_timber_analytics_event on timber_analytics (event);
+    create index if not exists idx_timber_analytics_tip on timber_analytics (tip_hash);
+  `);
+}
+TS
+
+# 5) Call bootstrap at server start
+INDEX="server/index.ts"
+if ! grep -q "ensureTimberAnalyticsTable" "$INDEX"; then
+  perl -0777 -pe 's|(import .*? from .*?;\s*)+$|\0import { ensureTimberAnalyticsTable } from "./db-bootstrap-timber-analytics";\n|s' -i "$INDEX" || true
+  perl -0777 -pe 's|(const app = express\(\);\s*)|\1\n// Ensure timber_analytics table exists\nensureTimberAnalyticsTable().catch(err=>console.error("bootstrap timber_analytics failed", err));\n|s' -i "$INDEX"
+fi
+
+# 6) Touch rebuild
+date > .rebuild_touch
+
+echo "DB analytics enabled:"
+echo "- Table: timber_analytics"
+echo "- Events inserted on /api/timber/analytics"
+echo "- Stats: GET /api/timber/stats?day=YYYY-MM-DD"
+echo "Restart, then hit a few pages, and visit /api/timber/stats to see counts."

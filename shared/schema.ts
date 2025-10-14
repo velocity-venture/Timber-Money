@@ -196,3 +196,18 @@ export const insertPitchAccessTokenSchema = createInsertSchema(pitchAccessTokens
 
 export type InsertPitchAccessToken = z.infer<typeof insertPitchAccessTokenSchema>;
 export type PitchAccessToken = typeof pitchAccessTokens.$inferSelect;
+
+// Timber Analytics table - tracks mascot engagement
+export const timberAnalytics = pgTable("timber_analytics", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  event: varchar("event", { length: 64 }).notNull(), // tip_impression | tip_hover | tip_click
+  path: varchar("path", { length: 256 }),
+  tipHash: integer("tip_hash"),
+  uid: varchar("uid", { length: 128 }),
+  ip: varchar("ip", { length: 64 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type TimberAnalyticsEvent = typeof timberAnalytics.$inferSelect;
