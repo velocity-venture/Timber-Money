@@ -53,7 +53,9 @@ function normalizeExtractedData(text: string, fileName: string) {
 
 async function extractFromPDF(filePath: string) {
   const buf = fs.readFileSync(filePath);
-  const pdfParse = (await import("pdf-parse")).default;
+  // Dynamic import for pdf-parse (CommonJS module)
+  const pdfParseModule = await import("pdf-parse");
+  const pdfParse = pdfParseModule.default || pdfParseModule;
   const data = await pdfParse(buf);
   const text = (data.text || "").trim();
   return { text, pages: data.numpages || 1 };
