@@ -43,10 +43,11 @@ function Router() {
         <>
           <Route path="/" component={Landing} />
           <Route path="/pricing" component={Pricing} />
-          <Route path="/pitch" component={Pitch} />
           <Route path="/privacy" component={Privacy} />
           <Route path="/security" component={Security} />
           <Route path="/terms" component={Terms} />
+          {/* Pitch deck is token-protected, not public */}
+          <Route path="/pitch" component={Pitch} />
         </>
       ) : (
         <>

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, TrendingUp, Users, DollarSign, Target, Rocket, BarChart3, Trophy, ExternalLink, Shield, Zap, Bot, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingUp, Users, DollarSign, Target, Rocket, BarChart3, Trophy, ExternalLink, Shield, Zap, Bot, CheckCircle2, ArrowRight, Sparkles, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const slides = [
   {
@@ -53,6 +56,19 @@ const slides = [
 
 export default function Pitch() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [, navigate] = useLocation();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  
+  // Get token from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  
+  // Validate token if present
+  const { data: tokenValidation, isLoading: tokenLoading, error: tokenError } = useQuery({
+    queryKey: ['/api/pitch-access/validate', token],
+    enabled: !!token && !isAuthenticated, // Only validate if token exists and user is not authenticated
+    retry: false,
+  });
 
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) {
@@ -69,6 +85,52 @@ export default function Pitch() {
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
   };
+  
+  // Show loading state while checking auth or token
+  if (authLoading || (token && tokenLoading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Check if user has access (either authenticated or has valid token)
+  const hasAccess = isAuthenticated || (token && (tokenValidation as any)?.valid);
+  
+  // Show access denied if no valid access method
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="max-w-md w-full p-8 text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+            <Lock className="w-8 h-8 text-destructive" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              {tokenError 
+                ? "The access link you're using is invalid, expired, or has been deactivated."
+                : "This pitch deck is private and requires an access link to view."}
+            </p>
+          </div>
+          <Button 
+            onClick={() => navigate('/')} 
+            variant="default"
+            data-testid="button-home"
+          >
+            Return Home
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+  
+  // Show welcome message if accessing via token
+  const recipientName = (tokenValidation as any)?.recipientName;
 
   return (
     <div className="min-h-screen bg-background flex flex-col" data-testid="page-pitch">
