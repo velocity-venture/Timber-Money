@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Documents Review - Timber Money Admin</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Inter,Arial;margin:18px;color:#0f172a;background:#f8fafc}
+    .header{margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+    .muted{color:#64748b;font-size:14px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+    pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:8px;overflow:auto;font-size:12px;max-height:400px}
+    .btn{background:#0b1629;color:#e5e7eb;border:1px solid #1f2f49;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px}
+    .btn:hover{background:#1f2f49}
+    .btn-success{background:#059669;border-color:#059669}
+    .btn-success:hover{background:#047857}
+    input,textarea{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;font-family:inherit}
+    textarea{min-height:60px;resize:vertical}
+    .card{border:1px solid #cbd5e1;border-radius:12px;padding:16px;margin-bottom:16px;background:white}
+    .status-badge{display:inline-block;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:500}
+    .status-completed{background:#d1fae5;color:#065f46}
+    .status-failed{background:#fee2e2;color:#991b1b}
+    .label{display:block;margin:8px 0 4px;font-size:13px;font-weight:500;color:#475569}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2 style="margin:0 0 8px">📄 Documents Review</h2>
+    <div class="muted">Filter by status, inspect parsed data, edit fields, and approve documents</div>
+  </div>
+  
+  <div style="margin:16px 0;display:flex;gap:12px;align-items:center">
+    <label style="display:flex;align-items:center;gap:6px">
+      Status: 
+      <select id="status" style="padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1">
+        <option value="">All</option>
+        <option value="completed">Completed</option>
+        <option value="failed">Failed</option>
+      </select>
+    </label>
+    <button class="btn" id="refresh">🔄 Refresh</button>
+  </div>
+  
+  <div id="list"></div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const API_KEY = prompt('Enter admin key (ADMIN_VIEW_KEY):') || '';
+    
+    async function load(){
+      const s = $('#status').value;
+      const url = '/api/docs' + (s ? '?status=' + encodeURIComponent(s) : '');
+      const r = await fetch(url, { headers: { 'x-admin-key': API_KEY } });
+      if (!r.ok) {
+        alert('Unauthorized or error: ' + r.status);
+        return;
+      }
+      const docs = await r.json();
+      const list = $('#list');
+      list.innerHTML = '';
+      
+      if (docs.length === 0) {
+        list.innerHTML = '<div class="muted" style="text-align:center;padding:40px">No documents found</div>';
+        return;
+      }
+      
+      docs.forEach(d => {
+        const statusClass = d.status === 'completed' ? 'status-completed' : d.status === 'failed' ? 'status-failed' : '';
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        const analysis = d.analysisData || {};
+        const summary = analysis.summary || {};
+        const period = analysis.period || {};
+        const validations = analysis.validations || {};
+        const txCount = (analysis.transactions || []).length;
+        
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+            <div>
+              <div style="font-weight:600;font-size:16px">${d.fileName || d.id}</div>
+              <div class="muted">${d.fileType || ''} • ${d.size ? (d.size/1024).toFixed(1) + ' KB' : '—'} • ${d.pages || 1} page(s)</div>
+            </div>
+            <span class="status-badge ${statusClass}">${d.status}</span>
+          </div>
+          
+          <div class="grid-2" style="margin-bottom:12px">
+            <div>
+              <div class="muted" style="font-size:12px">Document Type</div>
+              <div style="font-weight:500">${d.documentType || 'unknown'}</div>
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px">Needs Review</div>
+              <div style="font-weight:500">${d.needsReview ? '⚠️ Yes' : '✓ No'}</div>
+            </div>
+          </div>
+          
+          ${period.start ? `<div style="background:#f1f5f9;padding:8px;border-radius:6px;margin-bottom:12px;font-size:13px">
+            📅 Statement Period: <b>${period.start}</b> to <b>${period.end || '—'}</b>
+          </div>` : ''}
+          
+          ${txCount > 0 ? `<div style="background:#ecfdf5;padding:8px;border-radius:6px;margin-bottom:12px;font-size:13px">
+            💳 Transactions: <b>${txCount}</b> parsed
+          </div>` : ''}
+          
+          <div class="row">
+            <div>
+              <div class="muted" style="font-weight:500;margin-bottom:8px">Parsed Data</div>
+              <pre>${JSON.stringify(analysis, null, 2)}</pre>
+            </div>
+            <div>
+              <div class="muted" style="font-weight:500;margin-bottom:8px">Edit Fields</div>
+              <label class="label">Total Amount
+                <input id="total-${d.id}" value="${summary.total || ''}" placeholder="e.g., 1234.56"/>
+              </label>
+              <label class="label">Date
+                <input id="date-${d.id}" value="${summary.date || ''}" placeholder="e.g., 2024-01-15"/>
+              </label>
+              <label class="label">Vendor
+                <input id="vendor-${d.id}" value="${summary.vendor || ''}" placeholder="e.g., Amazon"/>
+              </label>
+              <label class="label">Document Type
+                <select id="type-${d.id}" style="width:100%;padding:8px">
+                  <option value="bank-statement" ${d.documentType==='bank-statement'?'selected':''}>Bank Statement</option>
+                  <option value="credit-card" ${d.documentType==='credit-card'?'selected':''}>Credit Card</option>
+                  <option value="invoice" ${d.documentType==='invoice'?'selected':''}>Invoice</option>
+                  <option value="receipt" ${d.documentType==='receipt'?'selected':''}>Receipt</option>
+                  <option value="other" ${d.documentType==='other'?'selected':''}>Other</option>
+                </select>
+              </label>
+              <label class="label">Notes
+                <textarea id="notes-${d.id}">${(validations.notes || []).join('\n')}</textarea>
+              </label>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="btn" onclick="save('${d.id}')">💾 Save</button>
+                <button class="btn btn-success" onclick="approve('${d.id}')">✓ Approve</button>
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+    
+    async function save(id){
+      const body = {
+        total: $('#total-' + id).value,
+        date: $('#date-' + id).value,
+        vendor: $('#vendor-' + id).value,
+        documentType: $('#type-' + id).value,
+        notes: $('#notes-' + id).value.split('\\n').filter(Boolean)
+      };
+      const r = await fetch('/api/docs/' + id + '/edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': API_KEY },
+        body: JSON.stringify(body)
+      });
+      if (r.ok) {
+        alert('Saved successfully');
+        await load();
+      } else {
+        alert('Save failed: ' + r.status);
+      }
+    }
+    
+    async function approve(id){
+      const r = await fetch('/api/docs/' + id + '/approve', {
+        method: 'POST',
+        headers: { 'x-admin-key': API_KEY }
+      });
+      if (r.ok) {
+        alert('Approved successfully');
+        await load();
+      } else {
+        alert('Approve failed: ' + r.status);
+      }
+    }
+    
+    $('#refresh').addEventListener('click', load);
+    $('#status').addEventListener('change', load);
+    
+    if (API_KEY) load();
+    
+    window.save = save;
+    window.approve = approve;
+  </script>
+</body>
+</html>

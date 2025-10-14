@@ -7,6 +7,7 @@ import { trackRequest, checkSuspiciousPatterns } from "./security-monitor";
 import { timberAnalyticsRouter } from "./timber-analytics";
 import { timberAdminRouter } from "./timber-admin";
 import { docsRouter } from "./docs-intake";
+import { docsAdminRouter } from "./docs-admin";
 import { isAuthenticated } from "./replitAuth";
 
 const app = express();
@@ -112,6 +113,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   
   // Timber admin dashboard (protected)
   app.use("/admin", timberAdminRouter);
+  
+  // Documents admin review (header-key protected)
+  app.use("/admin/docs", docsAdminRouter);
   
   // Document processing with PDF/OCR (requires authentication)
   app.use("/api/docs", isAuthenticated, docsRouter);

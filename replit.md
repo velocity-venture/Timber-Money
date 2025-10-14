@@ -112,10 +112,14 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
    - UI recovery guaranteed with try-finally blocks
    - Per-file error handling prevents cascade failures
    - Status filtering API: GET /api/docs?status={status}
-4. **Admin Dashboard** (/admin/timber):
-   - Header-based authentication using ADMIN_VIEW_KEY secret
-   - Real-time Timber analytics with daily stats API
-   - Interactive charts for usage tracking
+5. **Admin Dashboards**:
+   - **Timber Analytics** (/admin/timber): Real-time AI usage stats with daily analytics and charts
+   - **Documents Review** (/admin/docs): Document review interface with edit/approve capabilities
+     - Filter by status (completed, failed)
+     - View enriched analysisData with period, transactions, validations
+     - Edit fields: total, date, vendor, document type, notes
+     - Approve documents (marks as completed, removes review flag)
+   - Both protected by ADMIN_VIEW_KEY secret via x-admin-key header
 
 ## External Dependencies
 

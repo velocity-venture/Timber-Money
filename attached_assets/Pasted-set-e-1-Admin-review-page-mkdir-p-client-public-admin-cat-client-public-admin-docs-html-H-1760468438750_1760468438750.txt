@@ -1,0 +1,116 @@
+set -e
+
+# 1) Admin review page
+mkdir -p client/public/admin
+cat > client/public/admin/docs.html <<'HTML'
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Docs Review</title>
+<style>body{font-family:system-ui,Segoe UI,Inter,Arial;margin:18px;color:#0f172a} .row{display:grid;grid-template-columns:1fr 1fr;gap:16px} pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:8px;overflow:auto} .muted{color:#64748b} .btn{background:#0b1629;color:#e5e7eb;border:1px solid #1f2f49;border-radius:8px;padding:6px 10px;cursor:pointer} input,textarea{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px} .card{border:1px solid #cbd5e1;border-radius:12px;padding:12px}</style>
+</head>
+<body>
+  <h2>Documents Review</h2>
+  <div class="muted">Filter by status, inspect parsed JSON, make fixes, approve.</div>
+  <div style="margin:10px 0">
+    <label>Status: <select id="status"><option value="">All</option><option>review_needed</option><option>parsed</option><option>failed</option></select></label>
+    <button class="btn" id="refresh">Refresh</button>
+  </div>
+  <div id="list"></div>
+
+  <script>
+    const $ = s=>document.querySelector(s);
+    async function load(){
+      const s = $('#status').value;
+      const r = await fetch('/api/docs' + (s?('?status='+encodeURIComponent(s)):''));
+      const j = await r.json();
+      const list = $('#list'); list.innerHTML = '';
+      j.forEach((d)=>{
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = '<div><b>'+ (d.original_name||d.id) +'</b> <span class="muted">('+ (d.mime||'') +', '+ (d.size||0) +' bytes)</span></div>'
+          + '<div class="muted">Status: '+d.status+' | Pages: '+(d.pages||'—')+'</div>'
+          + '<div class="row" style="margin-top:8px">'
+          + '  <div><div class="muted">Parsed JSON</div><pre>'+ JSON.stringify(d.parsed,null,2) +'</pre></div>'
+          + '  <div><div class="muted">Edits</div>'
+          + '    <label>Total <input id="t-'+d.id+'" value="'+(d.parsed?.summary?.total||'')+'"/></label><br/>'
+          + '    <label>Date <input id="dt-'+d.id+'" value="'+(d.parsed?.summary?.date||'')+'"/></label><br/>'
+          + '    <label>Vendor <input id="v-'+d.id+'" value="'+(d.parsed?.summary?.vendor||'')+'"/></label><br/>'
+          + '    <label>Notes <textarea id="n-'+d.id+'">'+(d.parsed?.validations?.notes?.join("\n")||'')+'</textarea></label><br/>'
+          + '    <button class="btn" onclick="save(''+d.id+'')">Save</button> '
+          + '    <button class="btn" onclick="approve(''+d.id+'')">Approve</button>'
+          + '  </div>'
+          + '</div>';
+        list.appendChild(card);
+      });
+    }
+    async function save(id){
+      const body = {
+        total: $('#t-'+id).value,
+        date: $('#dt-'+id).value,
+        vendor: $('#v-'+id).value,
+        notes: $('#n-'+id).value.split('\n').filter(Boolean)
+      };
+      await fetch('/api/docs/'+id+'/edit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      await load();
+    }
+    async function approve(id){
+      await fetch('/api/docs/'+id+'/approve',{method:'POST'});
+      await load();
+    }
+    $('#refresh').addEventListener('click', load);
+    load();
+    window.save=save; window.approve=approve;
+  </script>
+</body>
+</html>
+HTML
+
+# 2) Admin routes (header-key protected, reuse ADMIN_VIEW_KEY)
+cat > server/docs-admin.ts <<'TS'
+import { Router, Request, Response } from "express";
+import path from "path";
+import { db } from "./db";
+
+export const docsAdminRouter = Router();
+
+function allowed(req: Request){ const k=process.env.ADMIN_VIEW_KEY||""; return !!k && req.headers["x-admin-key"]===k; }
+
+docsAdminRouter.get("/docs", (req: Request, res: Response) => {
+  if (!allowed(req)) return res.status(401).send("Unauthorized");
+  const p = path.join(process.cwd(), "client/public/admin/docs.html");
+  res.sendFile(p);
+});
+
+docsAdminRouter.post("/:id/edit", async (req: Request, res: Response) => {
+  if (!allowed(req)) return res.status(401).send("Unauthorized");
+  const { id } = req.params;
+  const { total, date, vendor, notes } = req.body || {};
+  const rows = await db.execute(`select parsed from documents where id=$1`, [id]);
+  if (!rows.rows?.length) return res.status(404).send("not_found");
+  const parsed = rows.rows[0].parsed || {};
+  parsed.summary = parsed.summary || {};
+  if (total !== undefined) parsed.summary.total = total;
+  if (date !== undefined) parsed.summary.date = date;
+  if (vendor !== undefined) parsed.summary.vendor = vendor;
+  parsed.validations = parsed.validations || {};
+  parsed.validations.notes = Array.isArray(notes) ? notes : [];
+  await db.execute(`update documents set parsed=$1, needs_review=false, updated_at=now() where id=$2`, [parsed, id]);
+  res.json({ ok: true });
+});
+
+docsAdminRouter.post("/:id/approve", async (req: Request, res: Response) => {
+  if (!allowed(req)) return res.status(401).send("Unauthorized");
+  const { id } = req.params;
+  await db.execute(`update documents set status='parsed', needs_review=false, updated_at=now() where id=$1`, [id]);
+  res.json({ ok: true });
+});
+TS
+
+# 3) Mount admin routes
+perl -0777 -pe 's|(import .*? from "express";)|\1\nimport { docsAdminRouter } from "./docs-admin";|' -i server/index.ts
+if ! grep -q 'app.use("/admin/docs", docsAdminRouter);' server/index.ts; then
+  perl -0777 -pe 's|(const app = express\(\);\s*)|\1\napp.use("/admin/docs", docsAdminRouter);\n|s' -i server/index.ts
+fi
+
+# 4) Touch rebuild
+date > .rebuild_touch
+echo "Step 4 done: Review at /admin/docs (header x-admin-key). Use ADMIN_VIEW_KEY."
