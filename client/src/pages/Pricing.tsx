@@ -22,7 +22,9 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { isUnauthorizedError } from "@/lib/authUtils";
 
 interface PricingTier {
   id: string;
@@ -108,9 +110,21 @@ const pricingTiers: PricingTier[] = [
 
 export default function Pricing() {
   const { toast } = useToast();
+  const { isAuthenticated, isLoading } = useAuth();
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
+
+  // Map tier + interval to Stripe plan name
+  const getPlanName = (tierId: string, yearly: boolean): string => {
+    if (tierId === 'pro') {
+      return yearly ? 'pro_annual' : 'pro_monthly';
+    }
+    if (tierId === 'family') {
+      return yearly ? 'family_annual' : 'family_monthly';
+    }
+    return '';
+  };
 
   const createCheckoutSession = useMutation({
     mutationFn: async (tierId: string) => {
@@ -118,66 +132,53 @@ export default function Pricing() {
       const tier = pricingTiers.find(t => t.id === tierId);
       if (!tier) throw new Error("Invalid tier");
 
-      // Create a Stripe checkout session with the correct plan and interval
-      const response = await apiRequest("POST", "/api/create-subscription", {
-        plan: tierId, // 'pro' or 'family'
-        interval: isYearly ? 'yearly' : 'monthly',
-        priceAmount: isYearly && tier.yearlyPrice ? tier.yearlyPrice : tier.price,
-        tierName: tier.name,
+      const planName = getPlanName(tierId, isYearly);
+      if (!planName) throw new Error("Invalid plan configuration");
+
+      // Call the protected checkout endpoint
+      const response = await apiRequest("POST", "/api/checkout", {
+        plan: planName,
       });
-      
-      // Parse response body once
-      let responseData;
-      try {
-        responseData = await response.json();
-      } catch (e) {
-        responseData = null;
-      }
-      
-      // Check for authentication requirement first
-      if (response.status === 401 && responseData?.requiresAuth && responseData?.loginUrl) {
-        // Show login toast and redirect
-        toast({
-          title: "Login Required",
-          description: responseData.message || "Please log in to continue with your subscription.",
-        });
-        setTimeout(() => {
-          window.location.href = responseData.loginUrl;
-        }, 1500);
-        // Return empty object to avoid error but skip onSuccess
-        return { authRedirect: true };
-      }
-      
-      // Check for other errors
+
+      // Check response status before parsing
       if (!response.ok) {
-        throw new Error(responseData?.message || 'Failed to create subscription');
+        const errorText = await response.text();
+        // Include status code in error message for unauthorized detection
+        throw new Error(`${response.status}: ${errorText || 'Failed to create checkout session'}`);
       }
       
-      return responseData;
+      // Parse and return JSON
+      const data = await response.json();
+      return data;
     },
-    onSuccess: (data) => {
-      // Skip if auth redirect case
-      if (data?.authRedirect) return;
-      
-      // Handle successful subscription creation
-      if (data?.clientSecret) {
-        toast({
-          title: "Subscription Created",
-          description: "Complete payment to activate your subscription.",
-        });
-        // TODO: Initialize Stripe Elements with clientSecret
-      } else {
+    onSuccess: (data: any) => {
+      if (data?.url) {
         toast({
           title: "Redirecting to checkout...",
           description: "You'll be redirected to secure payment in a moment.",
         });
+        // Redirect to Stripe checkout
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 500);
       }
     },
     onError: (error: any) => {
-      // Only show error if not handled in mutationFn
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to continue with your subscription.",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = '/api/login';
+        }, 1000);
+        return;
+      }
+      
       toast({
-        title: "Setup Required",
-        description: "Please contact support to enable payments: support@shoeboxtoautopilot.com",
+        title: "Error",
+        description: error.message || "Failed to create checkout session. Please try again.",
         variant: "destructive",
       });
     },
@@ -187,13 +188,34 @@ export default function Pricing() {
   });
 
   const handleSelectTier = (tierId: string) => {
-    // For free tier, redirect to login
+    // Wait for auth to finish loading before proceeding
+    if (isLoading) {
+      return; // Do nothing while auth is loading
+    }
+
+    // For free tier, redirect to login or home if already authenticated
     if (tierId === 'free') {
-      window.location.href = '/api/login';
+      if (isAuthenticated) {
+        window.location.href = '/';
+      } else {
+        window.location.href = '/api/login';
+      }
       return;
     }
     
-    // For paid tiers, initiate checkout
+    // For paid tiers, check authentication (we know loading is done at this point)
+    if (!isAuthenticated) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to continue with your subscription.",
+      });
+      setTimeout(() => {
+        window.location.href = '/api/login';
+      }, 1000);
+      return;
+    }
+    
+    // For paid tiers, initiate checkout (user is authenticated and not loading)
     setSelectedTier(tierId);
     createCheckoutSession.mutate(tierId);
   };

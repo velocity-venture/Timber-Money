@@ -33,7 +33,8 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
-  subscriptionStatus: varchar("subscription_status"),
+  subscriptionStatus: varchar("subscription_status"), // active, canceled, past_due, etc.
+  subscriptionPlan: varchar("subscription_plan"), // free, pro_monthly, pro_annual, family_monthly, family_annual
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

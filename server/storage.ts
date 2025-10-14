@@ -31,6 +31,15 @@ export interface IStorage {
     customerId: string,
     subscriptionId: string
   ): Promise<User>;
+  updateUserSubscription(
+    userId: string,
+    subscriptionData: {
+      stripeCustomerId: string;
+      stripeSubscriptionId: string;
+      subscriptionStatus: string;
+      subscriptionPlan: string;
+    }
+  ): Promise<User>;
 
   // Document operations
   createDocument(doc: InsertDocument): Promise<Document>;
@@ -99,6 +108,29 @@ export class DatabaseStorage implements IStorage {
       .set({
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscriptionId,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserSubscription(
+    userId: string,
+    subscriptionData: {
+      stripeCustomerId: string;
+      stripeSubscriptionId: string;
+      subscriptionStatus: string;
+      subscriptionPlan: string;
+    }
+  ): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        stripeCustomerId: subscriptionData.stripeCustomerId,
+        stripeSubscriptionId: subscriptionData.stripeSubscriptionId,
+        subscriptionStatus: subscriptionData.subscriptionStatus,
+        subscriptionPlan: subscriptionData.subscriptionPlan,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

@@ -43,13 +43,29 @@ Shoebox to Autopilot transforms financial documents into an automated money mana
 5. **Subscription Plans**: Includes Free, Pro, and Family tiers with varying features and access levels.
 
 ### Database Schema
-- **Users**: Managed by Replit Auth; session management via PostgreSQL.
+- **Users**: Managed by Replit Auth with subscription tracking (stripeCustomerId, stripeSubscriptionId, subscriptionStatus, subscriptionPlan); session management via PostgreSQL.
 - **Documents**: Stores user-uploaded financial documents with type categorization and metadata.
 - **Debts**: Tracks debts with principal, interest rate, and minimum payments.
 - **Assets**: Tracks assets like bank accounts, investments, and property.
 - **Income**: Manages income sources, amounts, and frequency.
 - **Budgets**: Handles budget category management and monthly allocations.
 - **Sessions**: Secure session storage with `express-session` and PostgreSQL.
+
+### Subscription & Payment Flow
+1. **Authentication Required**: Users must log in with Replit Auth before subscribing to paid plans
+   - Pricing page waits for auth to finish loading before allowing plan selection
+   - Prevents race conditions with authentication state
+2. **Checkout Creation**: POST /api/checkout with plan parameter (requires authentication)
+   - Plans: pro_monthly, pro_annual, family_monthly, family_annual
+   - User ID and email automatically passed to Stripe as metadata
+3. **Payment Processing**: Users redirected to Stripe Checkout for secure payment
+4. **Session Verification**: After payment, users land on /subscription-success with session_id
+   - Page automatically calls GET /api/checkout/verify-session (public endpoint)
+   - Endpoint validates Stripe session and extracts userId from metadata (no auth required due to Stripe redirect)
+   - Security: Session validation through Stripe API, userId extracted from session metadata
+   - Handles pending payments (subscription=null or payment_status!='paid') with retry logic
+   - Updates user record only after confirming subscription exists and payment is complete
+5. **Subscription Tracking**: User subscription status stored in database for access control
 
 ### UI/UX Decisions
 - Rebranded UI to emphasize the journey from financial chaos to automated management.
