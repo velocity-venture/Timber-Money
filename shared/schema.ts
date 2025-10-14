@@ -57,6 +57,10 @@ export const documents = pgTable("documents", {
   processedAt: timestamp("processed_at"),
   analysisData: jsonb("analysis_data"), // Extracted data from AI
   status: varchar("status").notNull().default("pending"), // pending, processing, completed, failed
+  size: integer("size"), // File size in bytes
+  pages: integer("pages"), // Number of pages (for PDFs)
+  sourcePath: varchar("source_path", { length: 512 }), // Disk path or URL
+  needsReview: boolean("needs_review").default(false), // Flag for manual review
 });
 
 export const insertDocumentSchema = createInsertSchema(documents).omit({

@@ -1,0 +1,214 @@
+set -e
+
+# 1) DB schema: documents + parsed payload
+SCHEMA="server/schema.ts"
+if [ -f "$SCHEMA" ] && ! grep -q "export const documents" "$SCHEMA"; then
+  cat >> "$SCHEMA" <<'TS'
+
+/* === Financial Docs Schema === */
+import { pgTable, varchar, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+
+export const documents = pgTable("documents", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  originalName: varchar("original_name", { length: 256 }),
+  mime: varchar("mime", { length: 128 }),
+  size: integer("size"),
+  pages: integer("pages"),
+  sourcePath: varchar("source_path", { length: 512 }), // disk or URL
+  status: varchar("status", { length: 32 }).notNull().default("pending"), // pending|processing|parsed|review_needed|failed
+  parsed: jsonb("parsed"),  // normalized JSON (amounts, dates, vendor, totals, etc.)
+  needsReview: boolean("needs_review").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+TS
+fi
+
+# 2) Bootstrap table
+cat > server/db-bootstrap-docs.ts <<'TS'
+import { db } from "./db";
+export async function ensureDocsTables(){
+  await db.execute(`
+    create table if not exists documents (
+      id varchar(36) primary key,
+      original_name varchar(256),
+      mime varchar(128),
+      size integer,
+      pages integer,
+      source_path varchar(512),
+      status varchar(32) not null default 'pending',
+      parsed jsonb,
+      needs_review boolean default false,
+      created_at timestamp default now() not null,
+      updated_at timestamp default now() not null
+    );
+    create index if not exists idx_documents_status on documents(status);
+    create index if not exists idx_documents_created on documents(created_at);
+  `);
+}
+TS
+
+# 3) Server: upload + extract route (PDF text + image OCR)
+mkdir -p server uploads client/public/pages
+cat > server/docs-intake.ts <<'TS'
+import { Router, Request, Response } from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { randomUUID } from "crypto";
+import pdfParse from "pdf-parse";
+import Tesseract from "tesseract.js";
+import { db } from "./db";
+import { documents } from "./schema";
+
+export const docsRouter = Router();
+const upload = multer({ dest: path.join(process.cwd(), "uploads") });
+
+function guessType(text: string){
+  const t = text.toLowerCase();
+  if (/statement/i.test(t) && /balance/i.test(t)) return "bank_statement";
+  if (/invoice/i.test(t)) return "invoice";
+  if (/receipt/i.test(t)) return "receipt";
+  return "document";
+}
+
+function normalize(text: string) {
+  // Simple heuristics; we’ll enrich later
+  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean).slice(0, 500);
+  const totalsMatch = text.match(/\btotal(?:\s+amount)?\s*[:-]?\s*$?\s*([0-9][0-9,]*.?[0-9]{0,2})/i);
+  const dateMatch = text.match(/\b(20\d{2}[-\/.]\d{1,2}[-\/.]\d{1,2}|\d{1,2}[-\/.]\d{1,2}[-\/.]20\d{2})\b/);
+  const vendorMatch = text.match(/\b(from|vendor|merchant)[:\s]+([A-Za-z0-9&.- ,]{3,})/i);
+  return {
+    type: guessType(text),
+    summary: {
+      total: totalsMatch ? totalsMatch[1] : null,
+      date: dateMatch ? dateMatch[1] : null,
+      vendor: vendorMatch ? vendorMatch[2].trim() : null,
+    },
+    preview: lines.slice(0, 40), // first lines
+  };
+}
+
+async function extractFromPDF(buf: Buffer){
+  const data = await pdfParse(buf);
+  const text = (data.text || "").trim();
+  return { text, pages: data.numpages || null };
+}
+
+async function extractFromImage(filePath: string){
+  const res = await Tesseract.recognize(filePath, "eng", { logger:()=>{} });
+  const text = (res.data.text || "").trim();
+  return { text, pages: 1 };
+}
+
+// Upload endpoint
+docsRouter.post("/upload", upload.single("file"), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "no_file" });
+    const id = randomUUID();
+    const file = req.file;
+    const srcPath = file.path;
+    const mime = file.mimetype;
+    const name = file.originalname;
+    const size = file.size;
+
+    // Insert pending
+    await db.insert(documents).values({
+      id, originalName: name, mime, size,
+      sourcePath: srcPath, status: "processing",
+    });
+
+    // Extract
+    let text = "";
+    let pages: number|null = null;
+    try {
+      if (/pdf$/i.test(file.mimetype) || /.pdf$/i.test(name)) {
+        const buf = fs.readFileSync(srcPath);
+        const out = await extractFromPDF(buf);
+        text = out.text;
+        pages = out.pages;
+        if (!text) {
+          // fallback: per-page OCR later; for now mark review
+          text = "";
+        }
+      } else if (/image\/(png|jpeg|jpg|gif|webp)/i.test(mime) || /.(png|jpe?g|gif|webp)$/i.test(name)) {
+        const out = await extractFromImage(srcPath);
+        text = out.text;
+        pages = out.pages;
+      } else {
+        // unknown; try read text directly
+        text = fs.readFileSync(srcPath, "utf8");
+      }
+    } catch (e) {
+      console.error("[docs] extract error", e);
+    }
+
+    const parsed = normalize(text || "");
+    const needsReview = !parsed.summary.total && parsed.type !== "document";
+
+    await db
+      .update(documents)
+      .set({
+        status: text ? "parsed" : "review_needed",
+        pages: pages || null,
+        parsed,
+        needsReview,
+        updatedAt: new Date(),
+      })
+      .where((fields, { eq }) => eq(fields.id, id));
+
+    res.json({ id, status: text ? "parsed" : "review_needed", pages, parsed });
+  } catch (e) {
+    console.error("[docs] upload error", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
+});
+
+// Fetch doc JSON
+docsRouter.get("/:id", async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const rows = await db.execute(`select * from documents where id = $1`, [id]);
+  if (!rows.rows?.length) return res.status(404).json({ error: "not_found" });
+  res.json(rows.rows[0]);
+});
+TS
+
+# 4) Simple upload page
+cat > client/public/pages/upload.html <<'HTML'
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Upload Financial Document</title>
+<style>body{font-family:system-ui,Segoe UI,Inter,Arial;margin:40px;color:#0f172a} .box{border:2px dashed #cbd5e1;border-radius:12px;padding:20px;max-width:480px}.muted{color:#64748b} pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:8px;overflow:auto}</style>
+</head>
+<body>
+  <h2>Upload Financial Document</h2>
+  <p class="muted">PDFs, images (receipts), invoices, statements.</p>
+  <div class="box">
+    <input id="f" type="file" accept=".pdf,image/*" />
+    <button id="u">Upload</button>
+  </div>
+  <pre id="out">Waiting...</pre>
+<script>
+  async function up(){
+    const f=document.getElementById('f').files[0];
+    if(!f){ alert('Choose a file'); return; }
+    const fd=new FormData(); fd.append('file', f);
+    const r=await fetch('/api/docs/upload',{method:'POST',body:fd});
+    const j=await r.json();
+    document.getElementById('out').textContent = JSON.stringify(j,null,2);
+  }
+  document.getElementById('u').addEventListener('click', up);
+</script>
+</body>
+</html>
+HTML
+
+# 5) Register routers and bootstrap
+perl -0777 -pe 's|(import .*? from "express";)|\1\nimport { docsRouter } from "./docs-intake";\nimport { ensureDocsTables } from "./db-bootstrap-docs";|' -i server/index.ts
+if ! grep -q 'app.use("/api/docs", docsRouter);' server/index.ts; then
+  perl -0777 -pe 's|(const app = express\(\);\s*)|\1\nensureDocsTables().catch(e=>console.error("docs table bootstrap failed", e));\napp.use("/api/docs", docsRouter);\n|s' -i server/index.ts
+fi
+
+# 6) Touch to rebuild
+date > .rebuild_touch
+echo "Step 1 done: Upload at /public/pages/upload.html, API at POST /api/docs/upload."
