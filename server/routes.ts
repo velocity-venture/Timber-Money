@@ -16,6 +16,7 @@ import multer from "multer";
 import { z } from "zod";
 import Stripe from "stripe";
 import { trackRequest, checkSuspiciousPatterns } from "./security-monitor";
+import crypto from "crypto";
 
 // Set up file upload handling
 const upload = multer({
@@ -550,7 +551,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pitch deck access token routes
   // Generate a secure random token
   function generateSecureToken(): string {
-    return require("crypto").randomBytes(32).toString('base64url');
+    return crypto.randomBytes(32).toString('base64url');
   }
 
   // POST /api/pitch-access/create - Create a new pitch deck access token (admin only)

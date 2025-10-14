@@ -66,6 +66,13 @@ export default function Pitch() {
   // Validate token if present
   const { data: tokenValidation, isLoading: tokenLoading, error: tokenError } = useQuery({
     queryKey: ['/api/pitch-access/validate', token],
+    queryFn: async () => {
+      const response = await fetch(`/api/pitch-access/validate?token=${encodeURIComponent(token!)}`);
+      if (!response.ok) {
+        throw new Error('Token validation failed');
+      }
+      return response.json();
+    },
     enabled: !!token && !isAuthenticated, // Only validate if token exists and user is not authenticated
     retry: false,
   });

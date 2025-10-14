@@ -15,6 +15,7 @@ import FinancialProfile from "@/pages/FinancialProfile";
 import Advisor from "@/pages/Advisor";
 import Pricing from "@/pages/Pricing";
 import Pitch from "@/pages/Pitch";
+import PitchAccessAdmin from "@/pages/PitchAccessAdmin";
 import Privacy from "@/pages/Privacy";
 import PrivacySettings from "@/pages/PrivacySettings";
 import Terms from "@/pages/Terms";
@@ -58,6 +59,7 @@ function Router() {
           <Route path="/advisor" component={Advisor} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/pitch" component={Pitch} />
+          <Route path="/pitch-access" component={PitchAccessAdmin} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/subscribe" component={Subscribe} />
           <Route path="/payment-success" component={PaymentSuccess} />
