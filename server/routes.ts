@@ -547,6 +547,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     );
   }
 
+  // Pitch deck access token routes
+  // Generate a secure random token
+  function generateSecureToken(): string {
+    return require("crypto").randomBytes(32).toString('base64url');
+  }
+
+  // POST /api/pitch-access/create - Create a new pitch deck access token (admin only)
+  app.post("/api/pitch-access/create", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user.claims;
+      const { recipientEmail, recipientName, expiresAt, maxUses } = req.body;
+      
+      // Generate a secure token
+      const token = generateSecureToken();
+      
+      // Create the access token
+      const accessToken = await storage.createPitchAccessToken({
+        token,
+        createdBy: user.sub,
+        recipientEmail,
+        recipientName,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        maxUses: maxUses || null,
+        isActive: true,
+      });
+      
+      // Return the token with the full URL
+      const baseUrl = process.env.REPL_SLUG 
+        ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
+        : `http://localhost:${process.env.PORT || 5000}`;
+      
+      res.json({
+        ...accessToken,
+        url: `${baseUrl}/pitch?token=${token}`,
+      });
+    } catch (error: any) {
+      console.error("Error creating pitch access token:", error);
+      res.status(500).json({ message: error.message || "Failed to create access token" });
+    }
+  });
+
+  // GET /api/pitch-access/validate - Validate a pitch deck access token (public)
+  app.get("/api/pitch-access/validate", async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ 
+          valid: false, 
+          message: "Missing or invalid token" 
+        });
+      }
+      
+      const accessToken = await storage.getPitchAccessToken(token);
+      
+      if (!accessToken) {
+        return res.status(404).json({ 
+          valid: false, 
+          message: "Invalid token" 
+        });
+      }
+      
+      // Check if token is active
+      if (!accessToken.isActive) {
+        return res.status(403).json({ 
+          valid: false, 
+          message: "Token has been deactivated" 
+        });
+      }
+      
+      // Check if token has expired
+      if (accessToken.expiresAt && new Date(accessToken.expiresAt) < new Date()) {
+        return res.status(403).json({ 
+          valid: false, 
+          message: "Token has expired" 
+        });
+      }
+      
+      // Check if token has reached max uses
+      if (accessToken.maxUses && accessToken.usageCount >= accessToken.maxUses) {
+        return res.status(403).json({ 
+          valid: false, 
+          message: "Token usage limit reached" 
+        });
+      }
+      
+      // Token is valid - increment usage
+      await storage.incrementTokenUsage(token);
+      
+      res.json({ 
+        valid: true,
+        recipientName: accessToken.recipientName || null,
+      });
+    } catch (error: any) {
+      console.error("Error validating pitch access token:", error);
+      res.status(500).json({ 
+        valid: false,
+        message: error.message || "Failed to validate token" 
+      });
+    }
+  });
+
+  // GET /api/pitch-access/list - Get all pitch access tokens for current user
+  app.get("/api/pitch-access/list", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user.claims;
+      const tokens = await storage.getAllPitchAccessTokens(user.sub);
+      
+      res.json(tokens);
+    } catch (error: any) {
+      console.error("Error fetching pitch access tokens:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch tokens" });
+    }
+  });
+
+  // DELETE /api/pitch-access/deactivate/:id - Deactivate a pitch access token
+  app.delete("/api/pitch-access/deactivate/:id", isAuthenticated, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deactivateToken(id);
+      
+      res.json({ message: "Token deactivated successfully" });
+    } catch (error: any) {
+      console.error("Error deactivating pitch access token:", error);
+      res.status(500).json({ message: error.message || "Failed to deactivate token" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
