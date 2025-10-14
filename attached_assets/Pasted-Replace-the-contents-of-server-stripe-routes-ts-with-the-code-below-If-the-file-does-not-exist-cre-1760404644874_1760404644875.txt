@@ -1,0 +1,90 @@
+Replace the contents of server/stripe-routes.ts with the code below. If the file does not exist, create it. Then ensure server/index.ts imports and uses these routes. Also set the following environment variables:
+STRIPE_SECRET_KEY = sk_test_your_key_here
+PRICE_FAMILY_MONTHLY = price_1SHwgiI3wsIEE2uCFXCP2dvE
+PRICE_PRO_ANNUAL = price_1SHwhRI3wsIEE2uCPFmT87gv
+PRICE_FAMILY_ANNUAL = price_1SHwisI3wsIEE2uCfI5GTVNz
+PRICE_PRO_MONTHLY = price_1SHwewI3wsIEE2uCOHXuT3jC
+
+Apply this server/stripe-routes.ts content:
+
+import type { Express, Request, Response } from "express";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+apiVersion: "2024-06-20",
+});
+
+const prices = {
+family_monthly: process.env.PRICE_FAMILY_MONTHLY!,
+pro_annual: process.env.PRICE_PRO_ANNUAL!,
+family_annual: process.env.PRICE_FAMILY_ANNUAL!,
+pro_monthly: process.env.PRICE_PRO_MONTHLY!, // optional: you created this too
+};
+
+export function registerStripeRoutes(app: Express) {
+// POST /api/checkout
+app.post("/api/checkout", async (req: Request, res: Response) => {
+try {
+const plan = String(req.body.plan || "").toLowerCase();
+const priceId = prices[plan as keyof typeof prices];
+if (!priceId) {
+return res.status(400).json({ message: "Invalid plan." });
+}
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${req.protocol}://${req.get("host")}/?checkout=success`,
+    cancel_url: `${req.protocol}://${req.get("host")}/?checkout=cancel`,
+    automatic_tax: { enabled: true },
+    allow_promotion_codes: true,
+  });
+
+  return res.json({ url: session.url });
+} catch (err: any) {
+  return res.status(500).json({ message: err.message || "Stripe error" });
+}
+});
+
+// GET /api/checkout/test/:plan
+app.get("/api/checkout/test/:plan", async (req: Request, res: Response) => {
+try {
+const plan = String(req.params.plan || "").toLowerCase();
+const priceId = prices[plan as keyof typeof prices];
+if (!priceId) {
+return res.status(400).json({ message: "Invalid plan." });
+}
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${req.protocol}://${req.get("host")}/?checkout=success`,
+    cancel_url: `${req.protocol}://${req.get("host")}/?checkout=cancel`,
+    automatic_tax: { enabled: true },
+    allow_promotion_codes: true,
+  });
+
+  return res.json({ url: session.url });
+} catch (err: any) {
+  return res.status(500).json({ message: err.message || "Stripe error" });
+}
+});
+}
+
+Next, ensure server/index.ts uses these routes. Insert the following import near your other imports and call it right after registerRoutes(app):
+
+import { registerStripeRoutes } from "./stripe-routes";
+
+// After const server = await registerRoutes(app);
+registerStripeRoutes(app);
+
+After the Build agent runs:
+
+Restart the server.
+Test each plan in your browser:
+https://YOUR-REPL-URL/api/checkout/test/family_monthly
+https://YOUR-REPL-URL/api/checkout/test/pro_annual
+https://YOUR-REPL-URL/api/checkout/test/family_annual
+https://YOUR-REPL-URL/api/checkout/test/pro_monthly
+Each should return a JSON with { url: "https://checkout.stripe.com/..." }.
+Click the URL to open Stripe Checkout. Use test mode card 4242 4242 4242 4242 with any future date, any CVC, any ZIP.

@@ -1,6 +1,7 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import helmet from "helmet";
 import { registerRoutes } from "./routes";
+import { registerStripeRoutes } from "./stripe-routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { trackRequest, checkSuspiciousPatterns } from "./security-monitor";
 
@@ -100,6 +101,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 (async () => {
   const server = await registerRoutes(app);
+  registerStripeRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
