@@ -1,0 +1,59 @@
+set -e
+
+APP_NAME="Timber Money"
+PKG_NAME="timber-money"
+
+echo "==> Ensuring .replit title..."
+if [ -f .replit ]; then
+  if grep -qi '^title *= *' .replit; then
+    perl -0777 -pe 's/^title *= *.*$/title = "Timber Money"/mi' -i .replit
+  else
+    printf '\n# App metadata\ntitle = "%s"\n' "$APP_NAME" >> .replit
+  fi
+else
+  printf '# Replit config\ntitle = "%s"\n' "$APP_NAME" > .replit
+fi
+
+echo "==> Updating package.json name/productName if present..."
+if [ -f package.json ]; then
+  # Use jq if available; else fallback to perl
+  if command -v jq >/dev/null 2>&1; then
+    TMP=$(mktemp)
+    jq --arg n "$PKG_NAME" --arg p "$APP_NAME" '
+      .name = $n
+      | (if has("productName") then .productName = $p else . end)
+    ' package.json > "$TMP" && mv "$TMP" package.json
+  else
+    perl -0777 -pe 's/"name"\s*:\s*".*?"/"name": "timber-money"/' -i package.json || true
+    perl -0777 -pe 's/"productName"\s*:\s*".*?"/"productName": "Timber Money"/' -i package.json || true
+  fi
+fi
+
+echo "==> Updating client/index.html <title> if present..."
+if [ -f client/index.html ]; then
+  perl -0777 -pe 's|<title>.*?</title>|<title>Timber Money</title>|is' -i client/index.html
+fi
+
+echo "==> Checking vite.config.ts for HTML title injections..."
+if [ -f vite.config.ts ]; then
+  # Common patterns: htmlPlugin with title, or inject in define
+  perl -0777 -pe 's/title:\s*".*?"/title: "Timber Money"/' -i vite.config.ts || true
+  perl -0777 -pe "s/process\.env\.VITE_APP_TITLE\s*\|\|\s*'[^']*'/process.env.VITE_APP_TITLE || 'Timber Money'/" -i vite.config.ts || true
+fi
+
+echo "==> Replacing visible strings 'DebtZero' -> 'Timber Money' in source files..."
+# Only change display strings in common text-bearing files
+grep -RIl --exclude-dir=node_modules --exclude-dir=.git --include='*.{ts,tsx,js,jsx,html,md}' 'DebtZero' . \
+  | xargs -r perl -0777 -pe 's/DebtZero/Timber Money/g' -i
+
+echo "==> Summary of occurrences:"
+echo "Project title in .replit:"
+grep -i '^title *= *' .replit || true
+
+echo "package.json name/productName:"
+grep -E '"(name|productName)"' package.json 2>/dev/null || echo "package.json not found or no fields."
+
+echo "Index.html title (if exists):"
+grep -n '<title>' client/index.html 2>/dev/null || echo "client/index.html not found."
+
+echo "==> Done. Now restart the app."
