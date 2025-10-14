@@ -36,7 +36,13 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
 - **Session Management**: PostgreSQL-backed sessions
 
 ### Key Features
-1. **Document Upload & Analysis**: Supports 6 document types with AI-powered data extraction and bank-level encryption. Documents are processed in real-time and not permanently stored.
+1. **Document Upload & Analysis**: Dual upload system with AI-powered data extraction and bank-level encryption
+   - **AI Vision Analysis** (POST /api/documents/upload): OpenAI GPT-4 vision analyzes images and extracts financial data automatically
+   - **PDF/OCR Extraction** (POST /api/docs/upload): Direct text extraction from PDFs using pdf-parse and OCR for images using Tesseract.js
+   - Supports 6 document types: bank statements, credit cards, loans, credit reports, investments, income documents
+   - Mobile-first upload with camera capture and photo library support
+   - Documents processed in real-time, not permanently stored
+   - Enhanced error handling ensures UI resilience during upload failures
 2. **Financial Profile Dashboard**: Provides complete asset/liability tracking, budget visualizations, income/expense analysis, and credit score tracking.
 3. **Debt Payoff Strategies**: Offers Avalanche, Snowball, and hybrid methods with side-by-side comparisons.
 4. **AI Financial Advisor**: A chat-based Q&A interface providing personalized, context-aware advice based on user financial profiles and uploaded documents.
@@ -44,12 +50,16 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
 
 ### Database Schema
 - **Users**: Managed by Replit Auth with subscription tracking (stripeCustomerId, stripeSubscriptionId, subscriptionStatus, subscriptionPlan); session management via PostgreSQL.
-- **Documents**: Stores user-uploaded financial documents with type categorization and metadata.
+- **Documents**: Enhanced schema for dual upload system
+  - Core fields: userId, fileName, fileType, documentType, status, analysisData
+  - PDF/OCR fields: parsed (jsonb), size, pages, sourcePath, needsReview
+  - Supports both AI vision analysis and direct text extraction workflows
 - **Debts**: Tracks debts with principal, interest rate, and minimum payments.
 - **Assets**: Tracks assets like bank accounts, investments, and property.
 - **Income**: Manages income sources, amounts, and frequency.
 - **Budgets**: Handles budget category management and monthly allocations.
 - **Sessions**: Secure session storage with `express-session` and PostgreSQL.
+- **Timber Analytics**: Daily aggregated statistics for Timber AI usage (interactions, messages, documents analyzed)
 
 ### Subscription & Payment Flow
 1. **Authentication Required**: Users must log in with Replit Auth before subscribing to paid plans
@@ -72,6 +82,26 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
 - Implemented a bright emerald green primary color scheme.
 - Professional financial statements and clear legal pages enhance trust.
 - Mobile experience enhanced with photo capture for document upload.
+- Document upload error handling: try-finally blocks ensure UI always recovers from upload failures.
+
+### Document Processing Architecture
+1. **Shoebox Mode** (Default): Users dump all documents at once
+   - Auto-detects document type from filename patterns
+   - AI categorizes and extracts data automatically
+   - Mobile-optimized with camera capture and photo library
+2. **Organized Mode**: Users select document type first, then upload
+   - Targeted upload for specific document categories
+   - More control over categorization
+3. **Processing Pipeline**:
+   - Files staged locally with pending status
+   - User triggers batch processing via "Analyze & Create Autopilot Plan" button
+   - Sequential processing with status updates: pending → uploading → analyzing → completed/error
+   - Per-file error handling prevents cascade failures
+   - Auto-creates debts, assets, and income from extracted data
+4. **Admin Dashboard** (/admin/timber):
+   - Header-based authentication using ADMIN_VIEW_KEY secret
+   - Real-time Timber analytics with daily stats API
+   - Interactive charts for usage tracking
 
 ## External Dependencies
 
@@ -84,3 +114,5 @@ Timber Money is an AI-powered financial management platform featuring the "Timbe
 - **shadcn/ui**: UI component library.
 - **Drizzle ORM**: For database schema definition and interaction.
 - **express-session**: For secure session management.
+- **pdf-parse**: PDF text extraction for document processing.
+- **Tesseract.js**: OCR (Optical Character Recognition) for image-based documents.
