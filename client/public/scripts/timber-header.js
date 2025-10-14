@@ -47,11 +47,20 @@
     var tipData = TIP_MAP.find(function(item){ return item.match.test(path); });
     if (tipData) {
       tip.textContent = tipData.text;
-      setTimeout(function(){ tip.style.display = 'block'; }, 1200);
+      setTimeout(function(){ 
+        tip.style.display = 'block'; 
+        try{ window.TimberAnalytics && TimberAnalytics.send("tip_impression", tip.textContent||""); }catch(e){} 
+      }, 1200);
       setTimeout(function(){ tip.style.display = 'none'; }, 5200);
       // Hover to re-show
-      el.addEventListener('mouseenter', function(){ tip.style.display = 'block'; });
+      el.addEventListener('mouseenter', function(){ 
+        tip.style.display = 'block'; 
+        try{ window.TimberAnalytics && TimberAnalytics.send("tip_hover", tip.textContent||""); }catch(e){} 
+      });
       el.addEventListener('mouseleave', function(){ tip.style.display = 'none'; });
+      el.addEventListener('click', function(){ 
+        try{ window.TimberAnalytics && TimberAnalytics.send("tip_click", tip.textContent||""); }catch(e){} 
+      });
     }
   }
 

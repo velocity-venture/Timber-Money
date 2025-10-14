@@ -1,0 +1,121 @@
+set -e
+
+# Goal: Track Timber tooltip impressions and hovers/clicks (privacy-safe, no PII).
+# - Creates a tiny client logger
+# - Adds a backend endpoint to record events in server logs (or db later)
+# - Sends: { event, path, ts, uid (hashed anon), tipCopyHash }
+
+# 1) Add client event logger used by the mascot
+mkdir -p client/public/scripts
+cat > client/public/scripts/timber-analytics.js <<'JS'
+(function(){
+  function hash(s){ // lightweight hash for copy content
+    var h=0,i,c;if(!s) return 0; for(i=0;i<s.length;i++){c=s.charCodeAt(i);h=((h<<5)-h)+c;h|=0;} return h>>>0;
+  }
+  function uid(){
+    try{
+      var x = localStorage.getItem('tm_uid');
+      if (!x){ x = (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2)) + '-' + Date.now(); localStorage.setItem('tm_uid', x); }
+      return x;
+    }catch(e){ return 'anon'; }
+  }
+  function send(ev, tipCopy){
+    try{
+      fetch('/api/timber/analytics', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          event: ev,
+          path: location.pathname + location.search,
+          ts: Date.now(),
+          uid: uid(),
+          tipHash: hash(tipCopy||'')
+        })
+      }).catch(()=>{});
+    }catch(e){}
+  }
+  window.TimberAnalytics = { send: send };
+})();
+JS
+
+# 2) Ensure analytics loader is included on all pages (index.html)
+if [ -f client/index.html ]; then
+  if ! grep -q 'timber-analytics.js' client/index.html; then
+    perl -0777 -pe 's#</head>#  <script src="/scripts/timber-analytics.js" defer></script>\n</head>#i' -i client/index.html
+  fi
+else
+  echo "WARN: client/index.html not found; analytics script not injected."
+fi
+
+# 3) Wire analytics into mascot behavior (impression + hover/click)
+JS_PATH="client/public/scripts/timber-header.js"
+if [ ! -f "$JS_PATH" ]; then echo "ERROR: $JS_PATH not found. Aborting."; exit 1; fi
+
+# Insert impression send when showing tip; also send on hover and click.
+perl -0777 -pe 's/(setTimeout\(function\(\)\{ tip.style.display = "block"; \}, 1200;)/\1\n      try{ window.TimberAnalytics && TimberAnalytics.send("tip_impression", tip.textContent||""); }catch(e){} /' -i "$JS_PATH"
+perl -0777 -pe 's/(el\.addEventListener\("mouseenter", function\(\)\{ tip\.style\.display = "block"; \}\);)/\1\n    try{ window.TimberAnalytics && TimberAnalytics.send("tip_hover", tip.textContent||""); }catch(e){} /' -i "$JS_PATH"
+perl -0777 -pe 's/(el\.addEventListener\("mouseleave", function\(\)\{ tip\.style\.display = "none"; \}\);)/\1\n    el.addEventListener("click", function(){ try{ window.TimberAnalytics && TimberAnalytics.send("tip_click", tip.textContent||""); }catch(e){} });/' -i "$JS_PATH"
+
+# 4) Backend endpoint: logs events (upgrade to DB later)
+mkdir -p server
+ANALYTICS_FILE="server/timber-analytics.ts"
+cat > "$ANALYTICS_FILE" <<'TS'
+import { Router, Request, Response } from "express";
+
+export const timberAnalyticsRouter = Router();
+
+type TimberEvent = {
+  event: "tip_impression" | "tip_hover" | "tip_click" | string;
+  path?: string;
+  ts?: number;
+  uid?: string;
+  tipHash?: number;
+};
+
+function sanitize(s: any) {
+  if (typeof s === "string") {
+    return s.replace(/[\r\n]/g, " ").slice(0, 200);
+  }
+  return s;
+}
+
+timberAnalyticsRouter.post("/analytics", (req: Request, res: Response) => {
+  try {
+    const data = req.body as TimberEvent || {};
+    const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0] || req.socket.remoteAddress || "unknown";
+    const line = JSON.stringify({
+      at: new Date().toISOString(),
+      ip: sanitize(ip),
+      ev: sanitize(data.event || "unknown"),
+      path: sanitize(data.path || ""),
+      tipHash: data.tipHash ?? null,
+      uid: sanitize(data.uid || "anon"),
+    });
+    // Log to console for now (Replit logs). Swap with DB later.
+    console.log("[timber-analytics]", line);
+    res.status(204).end();
+  } catch (e) {
+    console.error("[timber-analytics] error", e);
+    res.status(204).end();
+  }
+});
+TS
+
+# 5) Register router in server/index.ts (before generic error handlers)
+# Insert only if not present
+INDEX_FILE="server/index.ts"
+if grep -q "timber-analytics" "$INDEX_FILE"; then
+  echo "Router already referenced in server/index.ts"
+else
+  # Add import
+  perl -0777 -pe 's|(import .*? from .*?;\s*)+$|\0import express from "express";\nimport { timberAnalyticsRouter } from "./timber-analytics";\n|s' -i "$INDEX_FILE" || true
+  # Ensure app reference and mount; be careful to not duplicate
+  if ! grep -q 'app.use("/api/timber", timberAnalyticsRouter);' "$INDEX_FILE"; then
+    perl -0777 -pe 's|(const app = express\(\);\s*)|\1\n// Timber analytics\napp.use("/api/timber", timberAnalyticsRouter);\n|s' -i "$INDEX_FILE"
+  fi
+fi
+
+# 6) Touch to trigger rebuild
+date > .rebuild_touch
+
+echo "Timber analytics installed: client events wired + /api/timber/analytics endpoint logging to console. Restart, test pages, and check Replit logs for [timber-analytics] lines."

@@ -4,6 +4,7 @@ import { registerRoutes } from "./routes";
 import { registerStripeRoutes } from "./stripe-routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { trackRequest, checkSuspiciousPatterns } from "./security-monitor";
+import { timberAnalyticsRouter } from "./timber-analytics";
 
 const app = express();
 
@@ -102,6 +103,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 (async () => {
   const server = await registerRoutes(app);
   registerStripeRoutes(app);
+  
+  // Timber analytics
+  app.use("/api/timber", timberAnalyticsRouter);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
