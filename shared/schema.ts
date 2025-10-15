@@ -59,7 +59,8 @@ export const documents = pgTable("documents", {
   status: varchar("status").notNull().default("pending"), // pending, processing, completed, failed
   size: integer("size"), // File size in bytes
   pages: integer("pages"), // Number of pages (for PDFs)
-  sourcePath: varchar("source_path", { length: 512 }), // Disk path or URL
+  sourcePath: varchar("source_path", { length: 512 }), // Disk path or URL (deprecated, use s3Key)
+  s3Key: varchar("s3_key", { length: 512 }), // S3 object key for cloud storage
   needsReview: boolean("needs_review").default(false), // Flag for manual review
 });
 
