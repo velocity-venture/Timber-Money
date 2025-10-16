@@ -77,7 +77,7 @@ def ocr_with_textract_bytes(file_bytes):
     try:
         client = textract_client()
         resp = client.detect_document_text(Document={'Bytes': file_bytes})
-        lines = [b.get('DetectedText', '') for b in resp.get('Blocks', []) if b.get('BlockType') == 'LINE']
+        lines = [b.get('Text', '') for b in resp.get('Blocks', []) if b.get('BlockType') == 'LINE']
         return "\n".join(lines)
     except Exception as e:
         log("Textract error:", str(e))
@@ -137,13 +137,23 @@ def ocr_fallback_api(file_bytes):
 # ---------- Parsing & enrichment ----------
 def detect_doc_type(text):
     t = (text or "").lower()
+    # Invoice detection (must be first - more specific)
     if re.search(r"\b(invoice|invoice #|invoice no|invoice number)\b", t):
         return "invoice"
-    if re.search(r"\b(receipt|amount paid|total paid|change)\b", t):
-        return "receipt"
+    # Statement detection (specific keywords)
     if re.search(r"\b(statement of account|account statement|ending balance|opening balance)\b", t):
         return "statement"
-    if len(re.findall(r"\$\s*\d", t)) > 3 or len(re.findall(r"\b\d{2}/\d{2}/\d{2,4}\b", t)) > 3:
+    # Receipt detection (expanded patterns)
+    if re.search(r"\b(receipt|amount paid|total paid|change|thank you)\b", t):
+        return "receipt"
+    # Multiple items with prices suggests receipt
+    price_count = len(re.findall(r"\$\s*\d", t))
+    if price_count >= 2 and price_count <= 15:  # Receipts typically have 2-15 items
+        # Look for TOTAL pattern
+        if re.search(r"\btotal\b", t):
+            return "receipt"
+    # Many dates/prices suggests statement
+    if len(re.findall(r"\b\d{2}/\d{2}/\d{2,4}\b", t)) > 3:
         return "statement"
     return "unknown"
 
@@ -154,14 +164,15 @@ def find_date(text):
 def find_total(text):
     if not text:
         return None
-    # Try patterns with decimals first
-    m = re.search(r"(total due|balance due|amount due|total)\s*[:\-\s]*\$\s*([0-9\.,]+)", text, re.I)
+    # Try patterns with "total" keyword first (most reliable)
+    m = re.search(r"(total due|balance due|amount due|total|grand total)\s*[:\-\s]*\$?\s*([0-9\.,]+)", text, re.I)
     if m:
         return float(m.group(2).replace(",", ""))
-    m2 = re.search(r"\$\s*([0-9\.,]+)\s*(?:total|subtotal)?", text)
+    # Try amount with "total" after it
+    m2 = re.search(r"\$\s*([0-9\.,]+)\s*(?:total|subtotal)", text, re.I)
     if m2:
         return float(m2.group(1).replace(",", ""))
-    # Fallback: attempt to correct obvious missing-decimal patterns (e.g., 1234 -> 12.34 if likely)
+    # Fallback: find largest amount (likely the total)
     all_amounts = re.findall(r"\$\s*([0-9\.,]+)", text)
     if all_amounts:
         nums = []

@@ -14,9 +14,14 @@ def main():
         client = boto3.client("textract", region_name=REGION)
         with open(TEST_PATH, "rb") as f:
             resp = client.detect_document_text(Document={"Bytes": f.read()})
-        lines = [b.get("DetectedText","") for b in resp.get("Blocks",[]) if b.get("BlockType")=="LINE"]
+        blocks = resp.get("Blocks", [])
+        lines = [b.get("Text", "") for b in blocks if b.get("BlockType") == "LINE"]
         print("SUCCESS: Textract returned", len(lines), "lines")
-        print("\n".join(lines[:10]))  # show first 10 lines only
+        print("\nExtracted text:")
+        print("-" * 40)
+        for line in lines:
+            print(line)
+        print("-" * 40)
     except Exception as e:
         print("ERROR:", e)
 
