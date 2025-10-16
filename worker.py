@@ -363,7 +363,7 @@ def main():
                 rows = conn.execute(text("""
                     SELECT id, s3_key, source_path, status, attempts
                       FROM documents
-                     WHERE status IN ('failed') AND (attempts < :max_retries OR attempts IS NULL)
+                     WHERE status IN ('failed', 'queued') AND (attempts < :max_retries OR attempts IS NULL)
                   ORDER BY uploaded_at
                      LIMIT :limit
                      FOR UPDATE SKIP LOCKED
