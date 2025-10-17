@@ -8,6 +8,7 @@ import { documents } from "../shared/schema";
 import { eq, and } from "drizzle-orm";
 import { enrich } from "./docs-parse-pass";
 import { uploadToS3, getSignedDownloadUrl } from "./s3-storage";
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 export const docsRouter = Router();
 
@@ -15,6 +16,12 @@ const upload = multer({
   dest: path.join(process.cwd(), "uploads"),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
+
+// Initialize SQS client for async Textract processing
+const sqsClient = new SQSClient({ 
+  region: process.env.AWS_REGION || "us-east-1" 
+});
+const SQS_QUEUE_URL = process.env.AWS_QUEUE_URL || process.env.SQS_QUEUE_URL;
 
 function guessDocumentType(text: string, fileName: string): string {
   const t = text.toLowerCase();
@@ -56,7 +63,7 @@ async function extractFromPDF(filePath: string) {
   const buf = fs.readFileSync(filePath);
   // Dynamic import for pdf-parse (CommonJS module)
   const pdfParseModule = await import("pdf-parse");
-  const pdfParse = pdfParseModule.default || pdfParseModule;
+  const pdfParse = (pdfParseModule as any).default || pdfParseModule;
   const data = await pdfParse(buf);
   const text = (data.text || "").trim();
   return { text, pages: data.numpages || 1 };
@@ -163,7 +170,27 @@ docsRouter.post("/upload", upload.single("file"), async (req: any, res: Response
       })
       .returning();
 
-    // Queue removed - all processing is synchronous
+    // Send SQS message for async Textract processing (optional enhancement)
+    if (SQS_QUEUE_URL && s3Key && !s3UploadError) {
+      try {
+        const messageBody = JSON.stringify({
+          document_id: doc.id,
+          s3_key: s3Key,
+          user_id: userId,
+          file_name: name,
+        });
+
+        await sqsClient.send(new SendMessageCommand({
+          QueueUrl: SQS_QUEUE_URL,
+          MessageBody: messageBody,
+        }));
+
+        console.log(`[docs] ✅ SQS message sent for document: ${doc.id}`);
+      } catch (sqsError) {
+        // Non-blocking: Log error but don't fail the upload
+        console.error("[docs] ⚠️ SQS send failed (non-blocking):", sqsError);
+      }
+    }
 
     res.json({
       id: doc.id,
