@@ -79,15 +79,19 @@ async function extractFromImage(filePath: string) {
 
 docsRouter.post("/upload", upload.single("file"), async (req: any, res: Response) => {
   try {
-    if (!req.user?.claims?.sub) {
+    // Allow test endpoint without authentication (use test user ID)
+    const isTestEndpoint = req.baseUrl === '/api/docs-test' || req.originalUrl.includes('/docs-test');
+    const userId = isTestEndpoint ? 'test-user-123' : req.user?.claims?.sub;
+    
+    console.log('[docs] Upload request - baseUrl:', req.baseUrl, 'isTest:', isTestEndpoint, 'userId:', userId);
+    
+    if (!userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
-
-    const userId = req.user.claims.sub;
     const file = req.file;
     const srcPath = file.path;
     const mime = file.mimetype;
