@@ -143,21 +143,21 @@ setInterval(() => {
   const now = Date.now();
   
   // Clean up old request tracking data
-  for (const [ip, requests] of recentRequests.entries()) {
-    const validRequests = requests.filter(time => now - time < RATE_LIMIT_WINDOW);
+  Array.from(recentRequests.entries()).forEach(([ip, requests]) => {
+    const validRequests = requests.filter((time: number) => now - time < RATE_LIMIT_WINDOW);
     if (validRequests.length === 0) {
       recentRequests.delete(ip);
     } else {
       recentRequests.set(ip, validRequests);
     }
-  }
+  });
   
   // Clean up old auth attempts (reset after 1 hour)
-  for (const [identifier] of authAttempts.entries()) {
+  Array.from(authAttempts.entries()).forEach(([identifier]) => {
     // In production, check timestamp of last attempt
     // For now, just clear periodically
     if (Math.random() > 0.9) { // 10% chance to clear each cycle
       authAttempts.delete(identifier);
     }
-  }
+  });
 }, 5 * 60 * 1000); // 5 minutes

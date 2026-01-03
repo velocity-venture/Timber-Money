@@ -1,9 +1,9 @@
-/* Updated: Force refresh for emerald green colors - v2 */
+/* Updated: Timber Money Branding - Forest Green + Navy Trust - v3 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - Bright Emerald Green Color Scheme */
+/* LIGHT MODE - Timber Money: Forest Green + Navy Trust Color Scheme */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -33,7 +33,7 @@
 
   --sidebar-border: 214 32% 91%;
 
-  --sidebar-primary: 145 80% 44%;
+  --sidebar-primary: 158 64% 52%; /* Safety green #00D084 */
 
   --sidebar-primary-foreground: 0 0% 100%;
 
@@ -49,7 +49,7 @@
 
   --popover-border: 214 32% 91%;
 
-  --primary: 145 80% 44%;
+  --primary: 158 64% 52%; /* Safety green #00D084 */
 
   --primary-foreground: 0 0% 100%;
 
@@ -70,8 +70,8 @@
   --destructive-foreground: 0 0% 100%;
 
   --input: 214 32% 90%;
-  --ring: 145 80% 44%;
-  --chart-1: 145 80% 44%;
+  --ring: 158 64% 52%;
+  --chart-1: 158 64% 52%; /* Safety green */
   --chart-2: 173 70% 45%;
   --chart-3: 200 85% 45%;
   --chart-4: 43 90% 50%;
@@ -151,7 +151,7 @@
 
   --sidebar-border: 215 27% 18%;
 
-  --sidebar-primary: 145 70% 55%;
+  --sidebar-primary: 158 64% 52%; /* Safety green #00D084 */
 
   --sidebar-primary-foreground: 222 47% 7%;
 
@@ -167,7 +167,7 @@
 
   --popover-border: 215 27% 22%;
 
-  --primary: 145 70% 55%;
+  --primary: 158 64% 52%; /* Safety green #00D084 */
 
   --primary-foreground: 222 47% 7%;
 
@@ -188,8 +188,8 @@
   --destructive-foreground: 0 0% 100%;
 
   --input: 215 27% 23%;
-  --ring: 145 70% 55%;
-  --chart-1: 145 70% 55%;
+  --ring: 158 64% 52%;
+  --chart-1: 158 64% 52%; /* Safety green */
   --chart-2: 173 60% 52%;
   --chart-3: 200 70% 55%;
   --chart-4: 43 85% 60%;
@@ -354,5 +354,100 @@
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+}
+/* Timber Money Brand Colors */
+@layer utilities {
+  .timber-navy {
+    color: #0B1F3B;
+  }
+  
+  .bg-timber-navy {
+    background-color: #0B1F3B;
+  }
+  
+  .timber-green {
+    color: #00D084;
+  }
+  
+  .bg-timber-green {
+    background-color: #00D084;
+  }
+  
+  .timber-paper {
+    color: #F7F9FB;
+  }
+  
+  .bg-timber-paper {
+    background-color: #F7F9FB;
+  }
+  
+  .timber-gray {
+    color: #7A8CA0;
+  }
+  
+  .bg-timber-gray {
+    background-color: #7A8CA0;
+  }
+  
+  .timber-wood {
+    color: #8B5E43;
+  }
+  
+  .bg-timber-wood {
+    background-color: #8B5E43;
+  }
+  
+  .timber-yellow {
+    color: #FACC15;
+  }
+  
+  .bg-timber-yellow {
+    background-color: #FACC15;
+  }
+}
+
+/* Timber-themed animations */
+@layer utilities {
+  @keyframes timber-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+  
+  @keyframes timber-wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-2deg);
+    }
+    75% {
+      transform: rotate(2deg);
+    }
+  }
+  
+  @keyframes timber-pulse-green {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  .animate-timber-bounce {
+    animation: timber-bounce 1s ease-in-out infinite;
+  }
+  
+  .animate-timber-wiggle {
+    animation: timber-wiggle 0.5s ease-in-out;
+  }
+  
+  .animate-timber-pulse {
+    animation: timber-pulse-green 2s ease-in-out infinite;
   }
 }
