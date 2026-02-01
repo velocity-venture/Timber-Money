@@ -1,0 +1,7 @@
+www.shoeboxtoautopilot.com
+
+TXT = replit-verify=baa28abc-38c7-4403-93b8-3ff0bef593f2
+
+www.shoeboxtoautopilot.ai
+
+TXT = replit-verify=baa28abc-38c7-4403-93b8-3ff0bef593f2

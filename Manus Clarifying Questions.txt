@@ -1,0 +1,61 @@
+Clarifying Questions
+1. Mascot Integration Scope
+The Timber beaver mascot images are provided but not yet integrated. Where would you like to see the mascot appear?
+Landing page hero section?
+Empty states (no documents uploaded yet)?
+Loading screens during document processing?
+AI advisor chat interface?
+Onboarding flow?
+All of the above?
+2. Color Scheme Update
+The current app uses emerald green/teal. The mascot spec suggests:
+Midnight navy: #0B1F3B
+Safety green: #00D084
+Paper white: #F7F9FB
+Ledger gray: #7A8CA0
+Should I update the entire color scheme to match these colors, or keep the current emerald theme and just integrate the mascot as-is?
+3. Branding Name
+The documentation mentions potentially using a different consumer brand name (not "Timber Money"). Should I:
+Keep "Timber Money" as the product name?
+Use "Shoebox to Autopilot" as the tagline/campaign?
+Wait for a different brand name from marketing?
+4. Feature Priorities
+What should I prioritize for this build?
+Mascot integration and visual branding
+Enhanced money management messaging (beyond debt focus)
+Legal disclaimers and compliance text
+Bill tracking and automation features
+Onboarding flow improvements
+All of the above
+5. Database Export
+The database-export.json file is empty. Do you have sample data you'd like me to import, or should I create demo data for testing?
+Please let me know your preferences, and I'll proceed with the implementation!
+
+
+1. All of the above, but I will defer to your expertise. I would like some animation and not just still figures. 2. I would like you to use your expertise as a world-class marketer and branding expert to determine what colors are best. 3.  The app name will be Timber-Money, and Shoebox to Autopilot will be the campaign. 4. All of the above. I'm looking for a turnkey project ready to launch. 5. "Perform a global branding update for the project. Replace all instances of 'Scout' or 'Scout the Beaver' with 'Timber' or 'Timber the Beaver'. Specifically:
+
+Rename UI Components: Change ScoutChatSidebar.tsx to TimberChatSidebar.tsx.
+
+Update Logic: Ensure all AI prompt strings in the backend (e.g., in worker_sqs.py or AI service files) refer to the mascot as 'Timber'.
+
+Update UI Text: All dashboard headers, tooltips, and 'Timber Tips' must use the new name.
+
+Run Rebrand Script: Execute the existing ./rebrand.sh script in the root directory to verify if it handles any remaining legacy naming." 6. See Updated UI_UX Scaffold 7. Manus 1.6 Instruction for Backend:
+
+"Modify the AI analysis prompts in the backend to adopt the Timber persona. When generating financial advice, use analogies related to building a strong foundation (dams), clearing obstacles (debt), and preparing for the future. Ensure the database records for 'financial tips' are attributed to 'Timber'." 8. "Build a comprehensive React dashboard scaffold in the client/src directory using Tailwind CSS that includes:
+
+TimberChatSidebar.tsx: A sliding sidebar containing a chat interface. Style it with Timber Money branding (greens and browns). Include a placeholder for 'Timber the Beaver' to provide financial tips.
+
+FinancialOverview.tsx: A main dashboard view with 'Stat Cards' for:
+
+Total Debt (calculated from the database).
+
+Document Processing Status (fetching counts from the documents table).
+
+Next Payoff Goal (Snowball/Avalanche preview).
+
+DocumentList.tsx: A table component that lists all uploaded documents. Use the data from our existing PostgreSQL documents table, displaying the fileName, status (completed/failed), and analysisData.
+
+API Integration: Setup useEffect hooks to fetch data from the /api/documents and /api/transactions endpoints.
+
+Use the existing vite.config.ts and tailwind.config.ts configurations to ensure styles are applied correctly."

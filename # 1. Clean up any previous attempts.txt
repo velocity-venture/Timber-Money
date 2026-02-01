@@ -1,0 +1,17 @@
+# 1. Clean up any previous attempts
+cd ~/z2q-initiative
+rm -rf course-drop
+
+# 2. Clone the drop box (Download the zip)
+git clone https://github.com/velocity-venture/course-drop.git
+
+# 3. Move the zip out and unpack it
+mv course-drop/upload.zip .
+unzip -o upload.zip
+
+# 4. Install the new dependencies (lucide-react for icons)
+npm install lucide-react
+
+# 5. Rebuild the Library
+npm run build
+pm2 restart z2q-initiative
